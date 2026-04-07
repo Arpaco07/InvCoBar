@@ -166,8 +166,8 @@ textarea{min-height:92px;resize:vertical}
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Producto</th><th>Tipo</th><th>Estado</th><th>Acciones</th></tr></thead>
-            <tbody id="catalogKitchenBody"><tr><td colspan="4" class="small">Cargando…</td></tr></tbody>
+            <thead><tr><th>Producto</th><th>Tipo</th><th>Último capturado</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody id="catalogKitchenBody"><tr><td colspan="6" class="small">Cargando…</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -178,8 +178,8 @@ textarea{min-height:92px;resize:vertical}
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Producto</th><th>Tipo</th><th>Estado</th><th>Acciones</th></tr></thead>
-            <tbody id="catalogBarBody"><tr><td colspan="4" class="small">Cargando…</td></tr></tbody>
+            <thead><tr><th>Producto</th><th>Tipo</th><th>Último capturado</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody id="catalogBarBody"><tr><td colspan="6" class="small">Cargando…</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -408,10 +408,16 @@ async function loadCatalog(seccion){
   const data = await api({ action:'listCatalog', token, seccion });
   if (!data.ok) return toast(data.error || 'No se pudo cargar catálogo', true);
   const bodyId = seccion === 'cocina' ? 'catalogKitchenBody' : 'catalogBarBody';
+  if (!data.items.length) {
+    document.getElementById(bodyId).innerHTML = '<tr><td colspan="6" class="small">No hay productos en este catálogo.</td></tr>';
+    return;
+  }
   document.getElementById(bodyId).innerHTML = data.items.map(p => `
     <tr>
       <td>${escapeHtml(p.nombre)}</td>
       <td>${escapeHtml(p.unidad)}</td>
+      <td>${p.ultimaCantidad === null ? '—' : (p.ultimaCantidad + ' ' + escapeHtml(p.ultimaUnidad || p.unidad))}</td>
+      <td>${p.ultimaFecha ? escapeHtml(p.ultimaFecha) : '—'}</td>
       <td>${p.activo ? 'Activo' : 'Inactivo'}</td>
       <td><div class="actions"><button class="btn secondary" onclick='editCatalogItem(${JSON.stringify(p).replace(/'/g,"&#39;")}, "${seccion}")'>Editar</button><button class="btn secondary" onclick="toggleCatalog('${p.id}', ${!p.activo}, '${seccion}')">${p.activo ? 'Desactivar' : 'Activar'}</button></div></td>
     </tr>`).join('');
