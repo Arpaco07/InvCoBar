@@ -67,12 +67,12 @@ textarea{min-height:92px;resize:vertical}
     <div class="grid-two">
       <div class="card">
         <div class="row">
-          <div><h2>Cocina</h2><div class="small">Comparativo del reporte del día contra el día anterior.</div></div>
+          <div><h2>Cocina</h2><div class="small">Comparativo del reporte del día contra el último valor capturado de cada producto.</div></div>
           <span class="badge" id="kitchenStatus">—</span>
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Producto</th><th>Hoy</th><th>Ayer</th><th>Diferencia</th><th>Acciones</th></tr></thead>
+            <thead><tr><th>Producto</th><th>Hoy</th><th>Último capturado</th><th>Diferencia</th><th>Acciones</th></tr></thead>
             <tbody id="kitchenBody"><tr><td colspan="5" class="small">Cargando…</td></tr></tbody>
           </table>
         </div>
@@ -80,12 +80,12 @@ textarea{min-height:92px;resize:vertical}
 
       <div class="card">
         <div class="row">
-          <div><h2>Barra</h2><div class="small">Aquí cotejas lo que reporta barra contra tu sistema general.</div></div>
+          <div><h2>Barra</h2><div class="small">Aquí cotejas lo que reporta barra contra el último valor capturado y puedes corregirlo.</div></div>
           <span class="badge" id="barStatus">—</span>
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Producto</th><th>Hoy</th><th>Ayer</th><th>Diferencia</th><th>Acciones</th></tr></thead>
+            <thead><tr><th>Producto</th><th>Hoy</th><th>Último capturado</th><th>Diferencia</th><th>Acciones</th></tr></thead>
             <tbody id="barBody"><tr><td colspan="5" class="small">Cargando…</td></tr></tbody>
           </table>
         </div>
@@ -132,6 +132,32 @@ textarea{min-height:92px;resize:vertical}
   </section>
 
   <section id="screen-catalogo" class="screen">
+
+    <div class="card" style="margin-bottom:16px">
+      <h2>Alta / edición de catálogo</h2>
+      <div class="small">Aquí puedes crear o corregir productos base para cocina o barra.</div>
+      <div style="display:grid;grid-template-columns:1.2fr .8fr .8fr;gap:10px;margin-top:14px">
+        <input id="cNombre" placeholder="Nombre del producto">
+        <select id="cUnidad">
+          <option value="pza">pza</option>
+          <option value="kg">kg</option>
+          <option value="g">g</option>
+          <option value="L">L</option>
+          <option value="mL">mL</option>
+          <option value="paq">paq</option>
+          <option value="otro">otro</option>
+        </select>
+        <select id="cSeccion">
+          <option value="cocina">cocina</option>
+          <option value="barra">barra</option>
+        </select>
+      </div>
+      <div class="actions" style="margin-top:10px">
+        <button class="btn primary" onclick="saveCatalogForm()">Guardar producto</button>
+        <button class="btn secondary" onclick="resetCatalogForm()">Limpiar</button>
+      </div>
+    </div>
+
     <div class="grid-two">
       <div class="card">
         <div class="row">
@@ -173,9 +199,29 @@ textarea{min-height:92px;resize:vertical}
 
     <div class="table-wrap" style="margin-top:14px">
       <table>
-        <thead><tr><th>Producto</th><th>Hoy</th><th>Ayer</th><th>Diferencia</th><th>Acciones</th></tr></thead>
+        <thead><tr><th>Producto</th><th>Hoy</th><th>Último capturado</th><th>Diferencia</th><th>Acciones</th></tr></thead>
         <tbody id="modalRows"><tr><td colspan="5" class="small">Cargando…</td></tr></tbody>
       </table>
+    </div>
+
+    <div style="margin-top:14px;padding:14px;border:1px solid var(--line);border-radius:16px;background:#fbfdff">
+      <div class="small" style="margin-bottom:10px">Agregar producto al reporte desde admin</div>
+      <div style="display:grid;grid-template-columns:1.6fr .8fr .8fr;gap:10px">
+        <input id="adminNewNombre" placeholder="Producto">
+        <input id="adminNewCantidad" inputmode="decimal" placeholder="Cantidad">
+        <select id="adminNewUnidad">
+          <option value="pza">pza</option>
+          <option value="kg">kg</option>
+          <option value="g">g</option>
+          <option value="L">L</option>
+          <option value="mL">mL</option>
+          <option value="paq">paq</option>
+          <option value="otro">otro</option>
+        </select>
+      </div>
+      <div class="actions" style="margin-top:10px">
+        <button class="btn primary" onclick="adminAddRow()">Agregar producto</button>
+      </div>
     </div>
 
     <div style="margin-top:14px">
@@ -192,12 +238,13 @@ textarea{min-height:92px;resize:vertical}
 <div class="toast" id="toast"></div>
 
 <script>
-const API = 'https://script.google.com/macros/s/AKfycbyBaaFpvm44mgPupgDFTR4ZhMpp4MRc9D_8waIzno8iI1czX-Jt1mGBQymALL9oZneTXw/exec';
+const API = 'PEGA_AQUI_TU_URL_WEBAPP_ACTUALIZADA';
 const token = localStorage.getItem('token');
 let usuario = {};
 let dashboard = null;
 let editingUserId = '';
 let currentReport = null;
+let editingCatalogId = '';
 
 (function boot(){
   try { usuario = JSON.parse(localStorage.getItem('usuario') || '{}'); } catch(_) {}
@@ -254,8 +301,8 @@ function renderAreaCard(area, block, bodyId, statusId){
     <tr>
       <td>${escapeHtml(r.nombre)}<br><span class="small">Modificó: ${escapeHtml(r.updatedByName || '—')}</span></td>
       <td>${r.cantidad} ${escapeHtml(r.unidad)}</td>
-      <td>${r.ayerCantidad === null ? '—' : (r.ayerCantidad + ' ' + escapeHtml(r.unidad))}</td>
-      <td>${r.diferenciaVsAyer === null ? '—' : signed(r.diferenciaVsAyer)}</td>
+      <td>${r.referenciaCantidad === null ? '—' : (r.referenciaCantidad + ' ' + escapeHtml(r.unidad) + (r.referenciaFecha ? '<br><span class="small">' + escapeHtml(r.referenciaFecha) + '</span>' : ''))}</td>
+      <td>${r.diferenciaVsReferencia === null ? '—' : signed(r.diferenciaVsReferencia)}</td>
       <td><button class="btn secondary" onclick="openReport('${block.reporte.id}')">Ver / corregir</button></td>
     </tr>`).join('');
 }
@@ -267,12 +314,15 @@ async function openReport(reporteId){
   document.getElementById('modalTitle').textContent = 'Reporte ' + currentReport.seccion.toUpperCase() + ' · ' + currentReport.fecha;
   document.getElementById('modalMeta').textContent = 'Estado: ' + currentReport.estado + ' · enviado por: ' + (currentReport.submittedByName || '—');
   document.getElementById('adminNotes').value = currentReport.notasAdmin || '';
+  document.getElementById('adminNewNombre').value = '';
+  document.getElementById('adminNewCantidad').value = '';
+  document.getElementById('adminNewUnidad').value = 'pza';
   document.getElementById('modalRows').innerHTML = data.rows.map(r => `
     <tr>
       <td>${escapeHtml(r.nombre)}<br><span class="small">Último cambio: ${escapeHtml(r.lastUpdatedBy || '—')}</span></td>
       <td><input value="${r.cantidad}" inputmode="decimal" onchange="adminUpdateRow('${r.detalleId}', this.value)"></td>
-      <td>${r.ayerCantidad === null ? '—' : (r.ayerCantidad + ' ' + escapeHtml(r.unidad))}</td>
-      <td>${r.diferenciaVsAyer === null ? '—' : signed(r.diferenciaVsAyer)}</td>
+      <td>${r.referenciaCantidad === null ? '—' : (r.referenciaCantidad + ' ' + escapeHtml(r.unidad) + (r.referenciaFecha ? '<br><span class="small">' + escapeHtml(r.referenciaFecha) + '</span>' : ''))}</td>
+      <td>${r.diferenciaVsReferencia === null ? '—' : signed(r.diferenciaVsReferencia)}</td>
       <td><button class="btn secondary" onclick="adminDeleteRow('${r.detalleId}')">Eliminar</button></td>
     </tr>`).join('');
   document.getElementById('reportModal').classList.add('open');
@@ -363,7 +413,7 @@ async function loadCatalog(seccion){
       <td>${escapeHtml(p.nombre)}</td>
       <td>${escapeHtml(p.unidad)}</td>
       <td>${p.activo ? 'Activo' : 'Inactivo'}</td>
-      <td><button class="btn secondary" onclick="toggleCatalog('${p.id}', ${!p.activo}, '${seccion}')">${p.activo ? 'Desactivar' : 'Activar'}</button></td>
+      <td><div class="actions"><button class="btn secondary" onclick='editCatalogItem(${JSON.stringify(p).replace(/'/g,"&#39;")}, "${seccion}")'>Editar</button><button class="btn secondary" onclick="toggleCatalog('${p.id}', ${!p.activo}, '${seccion}')">${p.activo ? 'Desactivar' : 'Activar'}</button></div></td>
     </tr>`).join('');
 }
 async function toggleCatalog(id, activo, seccion){
@@ -371,6 +421,51 @@ async function toggleCatalog(id, activo, seccion){
   if (!data.ok) return toast(data.error || 'No se pudo cambiar catálogo', true);
   toast('Catálogo actualizado');
   await loadCatalog(seccion);
+}
+
+
+async function adminAddRow(){
+  const nombre = document.getElementById('adminNewNombre').value.trim();
+  const cantidad = document.getElementById('adminNewCantidad').value.trim();
+  const unidad = document.getElementById('adminNewUnidad').value;
+  const data = await api({ action:'adminSaveReportRow', token, reporteId: currentReport.id, nombre, cantidad, unidad });
+  if (!data.ok) return toast(data.error || 'No se pudo agregar', true);
+  toast('Producto agregado');
+  await openReport(currentReport.id);
+  await loadDashboard();
+}
+
+function editCatalogItem(p, seccion){
+  editingCatalogId = p.id;
+  document.getElementById('cNombre').value = p.nombre;
+  document.getElementById('cUnidad').value = p.unidad;
+  document.getElementById('cSeccion').value = seccion || 'cocina';
+  showTab('catalogo', document.querySelectorAll('.tab')[2]);
+}
+
+function resetCatalogForm(){
+  editingCatalogId = '';
+  document.getElementById('cNombre').value = '';
+  document.getElementById('cUnidad').value = 'pza';
+  document.getElementById('cSeccion').value = 'cocina';
+}
+
+async function saveCatalogForm(){
+  const payload = {
+    action:'saveCatalogItem',
+    token,
+    id: editingCatalogId,
+    nombre: document.getElementById('cNombre').value.trim(),
+    unidad: document.getElementById('cUnidad').value,
+    seccion: document.getElementById('cSeccion').value
+  };
+  const data = await api(payload);
+  if (!data.ok) return toast(data.error || 'No se pudo guardar producto', true);
+  toast('Catálogo guardado');
+  const target = payload.seccion;
+  resetCatalogForm();
+  await loadCatalog('cocina');
+  await loadCatalog('barra');
 }
 
 function signed(n){ return n > 0 ? '+' + n : String(n); }
