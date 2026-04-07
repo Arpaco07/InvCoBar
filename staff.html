@@ -149,6 +149,7 @@ let usuario = {};
 let currentReport = null;
 let rows = [];
 let draftChanged = false;
+let isLoading = false;
 
 (function boot(){
   try { usuario = JSON.parse(localStorage.getItem('usuario') || '{}'); } catch(_) {}
@@ -176,6 +177,10 @@ async function api(payload){
 }
 
 async function loadToday(){
+  isLoading = true;
+  currentReport = null;
+  document.getElementById('saveBtn').disabled = true;
+  document.getElementById('submitBtn').disabled = true;
   const data = await api({ action:'getStaffToday', token });
   if (!data.ok) { toast(data.error || 'No se pudo cargar', true); return; }
 
@@ -192,9 +197,10 @@ async function loadToday(){
 
   renderRows(data.previousSummary || []);
   renderSummary(data.previousSummary || []);
-  const locked = currentReport.estado !== 'BORRADOR';
+  const locked = !currentReport || currentReport.estado !== 'BORRADOR';
   document.getElementById('saveBtn').disabled = locked;
   document.getElementById('submitBtn').disabled = locked;
+  isLoading = false;
 }
 
 function renderRows(previousSummary){
@@ -255,6 +261,7 @@ function markChanged(index, field, value){
 }
 
 async function saveRow(index){
+  if (isLoading || !currentReport || !currentReport.id) return toast('Espera a que cargue el reporte', true);
   const r = rows[index];
   const data = await api({
     action:'saveDraftRow',
@@ -270,6 +277,7 @@ async function saveRow(index){
 }
 
 async function saveAll(){
+  if (isLoading || !currentReport || !currentReport.id) return toast('Espera a que cargue el reporte', true);
   for (let i = 0; i < rows.length; i++) {
     const data = await api({
       action:'saveDraftRow',
@@ -287,6 +295,7 @@ async function saveAll(){
 }
 
 async function addProduct(){
+  if (isLoading || !currentReport || !currentReport.id) return toast('Espera a que cargue el reporte', true);
   if (currentReport.estado !== 'BORRADOR') return;
   const nombre = document.getElementById('newNombre').value.trim();
   const cantidad = document.getElementById('newCantidad').value.trim();
@@ -302,6 +311,7 @@ async function addProduct(){
 }
 
 async function deleteRow(detalleId){
+  if (isLoading || !currentReport || !currentReport.id) return toast('Espera a que cargue el reporte', true);
   if (currentReport.estado !== 'BORRADOR') return;
   if (!confirm('¿Eliminar esta fila del reporte de hoy?')) return;
   const data = await api({ action:'deleteDraftRow', token, detalleId });
@@ -311,6 +321,7 @@ async function deleteRow(detalleId){
 }
 
 async function submitReport(){
+  if (isLoading || !currentReport || !currentReport.id) return toast('Espera a que cargue el reporte', true);
   if (currentReport.estado !== 'BORRADOR') return;
   if (!confirm('¿Dar de alta el reporte? Después de enviarlo el área ya no podrá modificarlo.')) return;
   const data = await api({ action:'submitTodayReport', token });
