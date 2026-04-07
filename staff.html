@@ -67,7 +67,7 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
       <div class="row">
         <div>
           <h2>Reporte de hoy</h2>
-          <div class="small">No vuelves a capturar todo desde cero. El sistema hereda tu última lista y solo modificas cantidades, agregas nuevos productos o eliminas filas del día.</div>
+          <div class="small">No vuelves a capturar todo desde cero. El sistema hereda el último valor válido de cada producto y solo modificas cantidades, agregas nuevos productos o eliminas filas del día.</div>
         </div>
         <div class="status" id="reportStatus">—</div>
       </div>
@@ -82,7 +82,7 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
               <th style="width:34%">Producto</th>
               <th style="width:16%">Cantidad</th>
               <th style="width:16%">Tipo</th>
-              <th style="width:14%">Ayer</th>
+              <th style="width:14%">Último capturado</th>
               <th style="width:20%">Acciones</th>
             </tr>
           </thead>
@@ -124,7 +124,7 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
       </div>
 
       <div style="margin-top:18px">
-        <h2 style="font-size:18px">Comparativo rápido vs ayer</h2>
+        <h2 style="font-size:18px">Comparativo rápido vs último capturado</h2>
         <div id="previousSummary" class="summary-list" style="margin-top:10px">
           <div class="small">Cargando…</div>
         </div>
@@ -143,7 +143,7 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
 <div class="toast" id="toast"></div>
 
 <script>
-const API = 'https://script.google.com/macros/s/AKfycbyBaaFpvm44mgPupgDFTR4ZhMpp4MRc9D_8waIzno8iI1czX-Jt1mGBQymALL9oZneTXw/exec';
+const API = 'PEGA_AQUI_TU_URL_WEBAPP_ACTUALIZADA';
 const token = localStorage.getItem('token');
 let usuario = {};
 let currentReport = null;
@@ -205,7 +205,10 @@ async function loadToday(){
 
 function renderRows(previousSummary){
   const prevMap = {};
-  previousSummary.forEach(p => prevMap[p.productoId] = p);
+  previousSummary.forEach(p => {
+    const key = p.productoId ? p.productoId : ('NM:' + String(p.nombre || '').toLowerCase());
+    prevMap[key] = p;
+  });
 
   const body = document.getElementById('rowsBody');
   if (!rows.length) {
@@ -214,7 +217,7 @@ function renderRows(previousSummary){
   }
 
   body.innerHTML = rows.map((r, idx) => {
-    const prev = prevMap[r.productoId];
+    const prev = prevMap[r.productoId || ('NM:' + String(r.productoNombre || '').toLowerCase())];
     const locked = currentReport.estado !== 'BORRADOR';
     return `
       <tr>
@@ -244,13 +247,13 @@ function renderUnitOptions(selected){
 function renderSummary(previousSummary){
   const wrap = document.getElementById('previousSummary');
   if (!previousSummary.length) {
-    wrap.innerHTML = '<div class="summary-item small">No hay día anterior para comparar todavía.</div>';
+    wrap.innerHTML = '<div class="summary-item small">Todavía no hay una referencia capturada para comparar.</div>';
     return;
   }
   wrap.innerHTML = previousSummary.slice(0,8).map(r => `
     <div class="summary-item">
       <strong>${escapeHtml(r.nombre)}</strong><br>
-      <span class="small">Ayer: ${r.cantidad} ${r.unidad}</span>
+      <span class="small">Último capturado: ${r.cantidad} ${r.unidad}${r.fecha ? (' · ' + r.fecha) : ''}</span>
     </div>`).join('');
 }
 
