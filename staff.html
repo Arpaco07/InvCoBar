@@ -1,701 +1,328 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Pares 84×88 — Área</title>
+<title>Los Pares — Staff</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Space+Mono:wght@400;700&display=swap');
-  :root{
-    --bg:#090909;--panel:#111;--line:#1d1d1d;--text:#e8e4dc;--muted:#777;--soft:#151515;
-    --ok:#3ecf8e;--err:#e05555;--cocina:#3ecf8e;--barra:#e05555;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;padding-bottom:100px}
-  header{
-    position:sticky;top:0;z-index:20;background:rgba(9,9,9,.96);backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--line);padding:14px 16px;display:flex;justify-content:space-between;gap:12px;align-items:center
-  }
-  .head-left{display:flex;gap:12px;align-items:center}
-  .logo{
-    width:40px;height:40px;border-radius:14px;display:grid;place-items:center;background:#111;
-    border:1px solid #262626;font-family:'Cormorant Garamond',serif;font-size:15px
-  }
-  .tt{font-size:11px;letter-spacing:3px;font-weight:700}
-  .uu{font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:3px}
-  .badge{
-    font-size:9px;font-weight:700;letter-spacing:2px;border-radius:999px;padding:7px 12px;border:1px solid
-  }
-  .badge.cocina{color:var(--cocina);background:#0c1c14;border-color:#19402b}
-  .badge.barra{color:var(--barra);background:#1b0d0d;border-color:#4a1d1d}
-  nav{display:flex;background:#0f0f0f;border-bottom:1px solid var(--line)}
-  .tab{
-    flex:1;padding:13px 6px;text-align:center;font-size:10px;letter-spacing:1px;color:#5e5e5e;
-    text-transform:uppercase;border-bottom:2px solid transparent;cursor:pointer
-  }
-  .tab.active{color:var(--text);border-bottom-color:var(--text)}
-  .screen{display:none;padding:18px 16px}
-  .screen.active{display:block}
-  .row-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px}
-  .label{font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
-  .btn-sm,.btn-main,.chip,.icon-btn{
-    border:none;cursor:pointer;font-family:'Space Mono',monospace
-  }
-  .btn-sm{
-    padding:10px 14px;border-radius:12px;background:var(--soft);color:var(--text);
-    border:1px solid #262626;font-size:10px;letter-spacing:2px
-  }
-  .catalog-list,.hist-list{display:grid;gap:10px}
-  .product-card,.cat-card,.hist-card,.panel{
-    background:var(--panel);border:1px solid var(--line);border-radius:18px
-  }
-  .product-card{padding:16px}
-  .ptop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}
-  .pname,.cat-name,.hist-name{
-    font-family:'Cormorant Garamond',serif;font-size:22px;line-height:1.05
-  }
-  .unit{
-    flex-shrink:0;padding:5px 10px;border-radius:999px;border:1px solid #2a2a2a;color:#8e8e8e;font-size:9px;letter-spacing:2px;text-transform:uppercase
-  }
-  .qty-row{display:flex;gap:8px;align-items:center}
-  .qty{
-    flex:1;background:#0b0b0b;border:1px solid #252525;border-radius:14px;color:var(--text);
-    padding:13px 12px;font-size:24px;font-weight:700;text-align:center;font-family:'Space Mono',monospace
-  }
-  .qty:focus,.txt:focus,.sel:focus,.note:focus{outline:none;border-color:#505050}
-  .qty-unit{font-size:11px;color:#666;letter-spacing:1px;min-width:42px}
-  .extras{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-  .icon-btn{
-    padding:8px 12px;border-radius:10px;background:var(--soft);color:#8f8f8f;border:1px solid #262626;font-size:10px;letter-spacing:1px
-  }
-  .icon-btn.active{color:var(--text);border-color:#484848}
-  .note{display:none;width:100%;margin-top:8px;background:#0b0b0b;border:1px solid #252525;border-radius:12px;color:var(--text);padding:10px 12px;resize:none;font-family:'Cormorant Garamond',serif;font-size:16px}
-  .file{display:none}
-  .photo-box{display:none;margin-top:8px;position:relative}
-  .photo-box img{width:100%;max-height:170px;object-fit:cover;border-radius:12px;border:1px solid #262626}
-  .xbtn{
-    position:absolute;top:8px;right:8px;background:rgba(0,0,0,.75);color:var(--err);
-    border:1px solid #4a1d1d;border-radius:8px;padding:5px 8px;font-size:10px
-  }
-  .photo-state{margin-top:6px;font-size:10px;letter-spacing:1px}
-  .photo-state.ok{color:var(--ok)} .photo-state.err{color:var(--err)} .photo-state.loading{color:#999}
-  .savebar{
-    position:fixed;left:0;right:0;bottom:0;padding:14px 16px;background:linear-gradient(to top, rgba(9,9,9,1), rgba(9,9,9,.82))
-  }
-  .btn-main{
-    width:min(720px,100%);display:block;margin:0 auto;padding:18px;border-radius:16px;background:var(--text);color:#111;
-    font-size:11px;font-weight:700;letter-spacing:4px
-  }
-  .btn-main:disabled{opacity:.35;cursor:not-allowed}
-  .panel{padding:16px}
-  .grid{display:grid;gap:12px}
-  .field label{display:block;margin-bottom:7px;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
-  .txt,.sel{
-    width:100%;background:#0b0b0b;border:1px solid #252525;border-radius:14px;color:var(--text);padding:14px 14px;font-size:15px
-  }
-  .chips{display:flex;flex-wrap:wrap;gap:8px}
-  .chip{
-    padding:10px 14px;border-radius:12px;background:#141414;border:1px solid #262626;color:#8e8e8e;font-size:10px;letter-spacing:2px
-  }
-  .chip.active{color:var(--text);border-color:#585858;background:#191919}
-  .split{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .cat-card,.hist-card{padding:14px}
-  .cat-meta,.hist-meta{font-size:10px;color:#777;letter-spacing:1px;margin-top:4px}
-  .cat-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-  .pill{
-    padding:8px 10px;border-radius:10px;font-size:10px;letter-spacing:1px;border:1px solid #2a2a2a;background:#151515;color:#d0d0d0
-  }
-  .pill.off{color:var(--err);border-color:#4a1d1d;background:#1b0d0d}
-  .pill.on{color:var(--ok);border-color:#19402b;background:#0c1c14}
-  .hist-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-  .hist-qty{font-size:18px;font-weight:700;white-space:nowrap}
-  .hist-photo a{display:inline-block;margin-top:8px;color:#cfcfcf;text-decoration:none;border:1px solid #2b2b2b;padding:6px 10px;border-radius:10px;font-size:10px}
-  .empty,.loading{
-    text-align:center;padding:60px 16px;color:#444;font-size:11px;letter-spacing:3px
-  }
-  .toast{
-    position:fixed;top:82px;left:50%;transform:translateX(-50%);padding:12px 18px;border-radius:12px;font-size:10px;
-    letter-spacing:2px;z-index:30;opacity:0;pointer-events:none;transition:.2s
-  }
-  .toast.show{opacity:1}
-  .toast.ok{background:#0c1c14;border:1px solid #19402b;color:var(--ok)}
-  .toast.err{background:#1b0d0d;border:1px solid #4a1d1d;color:var(--err)}
-  .toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:14px}
-  .right-actions{display:flex;gap:8px}
-  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:flex-end;justify-content:center;z-index:50}
-  .modal-bg.open{display:flex}
-  .modal{width:min(520px,100%);background:#111;border:1px solid var(--line);border-radius:22px 22px 0 0;padding:22px 18px 24px}
-  .modal-title{font-family:'Cormorant Garamond',serif;font-size:28px;margin-bottom:14px}
-  @media (min-width:760px){
-    .screen{max-width:900px;margin:0 auto}
-    .catalog-list{grid-template-columns:repeat(2,1fr)}
-  }
+:root{
+  --bg:#f5f8fc; --panel:#fff; --line:#d8e3f3; --text:#20324a; --muted:#6b7a90;
+  --primary:#1f6fff; --primary-soft:#eaf2ff; --ok:#16a34a; --err:#dc2626; --warn:#f59e0b;
+}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{position:sticky;top:0;background:white;border-bottom:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:20}
+.h-left{display:flex;gap:12px;align-items:center}
+.logo{width:46px;height:46px;border-radius:16px;background:#0b0b0b;padding:6px;object-fit:contain}
+.t1{font-size:20px;font-weight:700}.t2{font-size:12px;color:var(--muted)}
+.btn{border:none;border-radius:14px;padding:12px 16px;cursor:pointer;font-weight:700}
+.btn.primary{background:var(--primary);color:white}.btn.secondary{background:white;border:1px solid var(--line);color:var(--text)}
+.btn.warn{background:#fff7ed;color:#9a3412;border:1px solid #fdba74}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 16px 120px}
+.grid-top{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:18px}
+.card h2{margin:0 0 8px;font-size:20px}
+.small{font-size:12px;color:var(--muted);line-height:1.5}
+.status{display:inline-block;padding:7px 12px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px}
+.status.borrador{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
+.status.enviado{background:#fff7ed;color:#9a3412;border:1px solid #fdba74}
+.status.revisado,.status.cerrado{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.table-wrap{margin-top:16px;background:white;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px 10px;border-bottom:1px solid #edf2fa;text-align:left;font-size:14px;vertical-align:middle}
+th{background:#f8fbff;font-size:12px;color:#5f6f85;text-transform:uppercase;letter-spacing:.5px}
+input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;font-size:14px}
+input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px rgba(31,111,255,.12)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.mono{font-family:ui-monospace, SFMono-Regular, Menlo, monospace}
+.summary-list{display:grid;gap:10px}
+.summary-item{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#fbfdff}
+.fixed-bottom{position:fixed;left:0;right:0;bottom:0;padding:14px 16px;background:linear-gradient(180deg,transparent,#f5f8fc 28%)}
+.bottom-inner{max-width:1100px;margin:0 auto;display:flex;gap:10px;justify-content:flex-end}
+.badge{font-size:12px;padding:6px 10px;border-radius:999px;background:var(--primary-soft);color:var(--primary);border:1px solid #cfe0ff}
+.toast{position:fixed;top:84px;left:50%;transform:translateX(-50%);padding:12px 16px;border-radius:14px;display:none;z-index:50}
+.toast.show{display:block}.toast.ok{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0}.toast.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+@media(max-width:900px){.grid-top{grid-template-columns:1fr}.actions{flex-direction:column}.bottom-inner{flex-direction:column}}
 </style>
 </head>
 <body>
 <header>
-  <div class="head-left">
-    <div class="logo">84×88</div>
+  <div class="h-left">
+    <img class="logo" src="logo_pares.png" alt="Los Pares">
     <div>
-      <div class="tt">PARES 84×88</div>
-      <div class="uu" id="userLine">Cargando…</div>
+      <div class="t1">Declaración diaria por área</div>
+      <div class="t2" id="userLine">Cargando…</div>
     </div>
   </div>
-  <div style="display:flex;gap:8px;align-items:center">
-    <span class="badge" id="areaBadge">ÁREA</span>
-    <button class="btn-sm" onclick="logout()">SALIR</button>
+  <div class="actions">
+    <button class="btn secondary" onclick="loadToday()">Recargar</button>
+    <button class="btn secondary" onclick="logout()">Salir</button>
   </div>
 </header>
 
-<nav>
-  <div class="tab active" id="tConteo" onclick="showTab('conteo')">Conteo</div>
-  <div class="tab" id="tCatalogo" onclick="showTab('catalogo')">Mi catálogo</div>
-  <div class="tab" id="tHistorial" onclick="showTab('historial')">Historial</div>
-</nav>
-
-<section class="screen active" id="sConteo">
-  <div class="row-head">
-    <div class="label">Conteo de hoy</div>
-    <div class="right-actions">
-      <button class="btn-sm" onclick="loadCatalogo()">RECARGAR</button>
-    </div>
-  </div>
-  <div id="productList" class="grid"><div class="loading">Cargando catálogo…</div></div>
-</section>
-
-<section class="screen" id="sCatalogo">
-  <div class="toolbar">
-    <div class="label">Catálogo del área</div>
-    <button class="btn-sm" onclick="openAddModal()">+ Producto</button>
-  </div>
-  <div id="catalogList" class="catalog-list"><div class="loading">Cargando catálogo…</div></div>
-</section>
-
-<section class="screen" id="sHistorial">
-  <div class="row-head">
-    <div class="label">Últimos movimientos</div>
-    <button class="btn-sm" onclick="loadHistorial()">RECARGAR</button>
-  </div>
-  <div id="histList" class="hist-list"><div class="loading">Cargando historial…</div></div>
-</section>
-
-<div class="savebar" id="savebar">
-  <button class="btn-main" id="btnGuardar" onclick="guardarConteo()">GUARDAR CONTEO</button>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<div class="modal-bg" id="modalBg">
-  <div class="modal">
-    <div class="modal-title" id="modalTitle">Nuevo producto</div>
-
-    <div class="panel" style="padding:0;border:none;background:transparent">
-      <div class="grid">
-        <div class="field">
-          <label>Producto</label>
-          <input class="txt" id="mNombre" placeholder="Ej. Limón persa">
+<div class="wrap">
+  <div class="grid-top">
+    <div class="card">
+      <div class="row">
+        <div>
+          <h2>Reporte de hoy</h2>
+          <div class="small">No vuelves a capturar todo desde cero. El sistema hereda tu última lista y solo modificas cantidades, agregas nuevos productos o eliminas filas del día.</div>
         </div>
+        <div class="status" id="reportStatus">—</div>
+      </div>
+      <div style="margin-top:12px" class="small">
+        Fecha: <strong id="reportDate">—</strong> · Área: <strong id="reportArea">—</strong> · Última actualización: <strong id="reportUpdated">—</strong>
+      </div>
 
-        <div class="split">
-          <div class="field">
-            <label>Cantidad inicial</label>
-            <input class="txt" id="mCantidad" inputmode="decimal" placeholder="0">
+      <div class="table-wrap" style="margin-top:16px">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:34%">Producto</th>
+              <th style="width:16%">Cantidad</th>
+              <th style="width:16%">Tipo</th>
+              <th style="width:14%">Ayer</th>
+              <th style="width:20%">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="rowsBody">
+            <tr><td colspan="5" class="small">Cargando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Agregar producto al reporte</h2>
+      <div class="small">Úsalo solo si hoy apareció un producto nuevo en tu área. Si ya existe, solo modifica la fila.</div>
+
+      <div style="display:grid;gap:12px;margin-top:16px">
+        <div>
+          <label class="small">Producto</label>
+          <input id="newNombre" placeholder="Ej. Ribeye steak">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <label class="small">Cantidad</label>
+            <input id="newCantidad" inputmode="decimal" placeholder="0">
           </div>
-          <div class="field">
-            <label>Unidad</label>
-            <select class="sel" id="mUnidadSelect" onchange="onUnitSelect()">
+          <div>
+            <label class="small">Tipo</label>
+            <select id="newUnidad">
+              <option value="pza">pza</option>
               <option value="kg">kg</option>
               <option value="g">g</option>
-              <option value="pza">pza</option>
               <option value="L">L</option>
               <option value="mL">mL</option>
-              <option value="bolsa">bolsa</option>
-              <option value="caja">caja</option>
-              <option value="botella">botella</option>
-              <option value="bote">bote</option>
+              <option value="paq">paq</option>
               <option value="otro">otro</option>
             </select>
           </div>
         </div>
-
-        <div class="field" id="mUnidadCustomWrap" style="display:none">
-          <label>Unidad personalizada</label>
-          <input class="txt" id="mUnidadCustom" placeholder="Ej. charola">
-        </div>
+        <button class="btn primary" onclick="addProduct()">Agregar al reporte de hoy</button>
       </div>
 
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <button class="btn-sm" style="flex:1" onclick="closeModal()">Cancelar</button>
-        <button class="btn-main" style="margin:0;flex:2" id="btnModalSave" onclick="saveModal()">Guardar</button>
+      <div style="margin-top:18px">
+        <h2 style="font-size:18px">Comparativo rápido vs ayer</h2>
+        <div id="previousSummary" class="summary-list" style="margin-top:10px">
+          <div class="small">Cargando…</div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
+<div class="fixed-bottom">
+  <div class="bottom-inner">
+    <button class="btn warn" id="saveBtn" onclick="saveAll()">Guardar cambios</button>
+    <button class="btn primary" id="submitBtn" onclick="submitReport()">Dar de alta reporte</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-const API = 'https://script.google.com/macros/s/AKfycbzQ3VGL57gj-GA0AfgTAL6djmdEJgQKYEnhtNnJbX0N1ei9MK1Tzfq-aRT2sykhCaM/exec';
+const API = 'REEMPLAZA_AQUI_TU_WEBAPP_URL';
+const token = localStorage.getItem('token');
+let usuario = {};
+let currentReport = null;
+let rows = [];
+let draftChanged = false;
 
-let TOKEN = localStorage.getItem('token');
-let USUARIO = null;
-let CATALOGO = [];
-let HISTORIAL = [];
-let FOTO_URLS = {};
-let EDITING_PRODUCT = null;
-
-(function init(){
-  try { USUARIO = JSON.parse(localStorage.getItem('usuario') || '{}'); } catch(_) {}
-  if (!TOKEN || !USUARIO || !USUARIO.rol || USUARIO.rol === 'admin') {
-    window.location.href = 'index.html';
-    return;
-  }
-  paintUser();
-  bootstrap();
+(function boot(){
+  try { usuario = JSON.parse(localStorage.getItem('usuario') || '{}'); } catch(_) {}
+  if (!token || !usuario.rol) return location.href = 'index.html';
+  if (String(usuario.rol).toUpperCase() === 'ADMIN') return location.href = 'admin.html';
+  loadToday();
 })();
-
-function paintUser(){
-  document.getElementById('userLine').textContent = (USUARIO.nombre || '') + ' · ' + (USUARIO.seccion || '').toUpperCase();
-  const badge = document.getElementById('areaBadge');
-  badge.textContent = (USUARIO.seccion || '').toUpperCase();
-  badge.classList.add(USUARIO.seccion);
-}
 
 function logout(){
   localStorage.removeItem('token');
   localStorage.removeItem('usuario');
-  window.location.href = 'index.html';
+  location.href = 'index.html';
 }
 
-function showTab(name){
-  ['conteo','catalogo','historial'].forEach(t => {
-    document.getElementById('s' + cap(t)).classList.toggle('active', t === name);
-    document.getElementById('t' + cap(t)).classList.toggle('active', t === name);
-  });
-  document.getElementById('savebar').style.display = name === 'conteo' ? '' : 'none';
-}
-
-function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
-
-function toast(msg, isErr=false){
+function toast(msg, err=false){
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.className = 'toast show ' + (isErr ? 'err' : 'ok');
-  setTimeout(() => t.className = 'toast', 2600);
+  t.className = 'toast show ' + (err ? 'err' : 'ok');
+  setTimeout(() => t.className = 'toast', 2500);
 }
 
 async function api(payload){
   const r = await fetch(API, { method:'POST', body: JSON.stringify(payload) });
-  const data = await r.json();
-  if (!data.ok && String(data.error || '').toLowerCase().includes('sesión')) {
-    logout();
-    throw new Error('Sesión expirada');
-  }
-  return data;
+  return await r.json();
 }
 
-async function bootstrap(){
-  try{
-    await Promise.all([loadCatalogo(), loadHistorial()]);
-  }catch(e){
-    toast('No se pudo cargar el sistema', true);
-  }
+async function loadToday(){
+  const data = await api({ action:'getStaffToday', token });
+  if (!data.ok) { toast(data.error || 'No se pudo cargar', true); return; }
+
+  usuario = data.usuario;
+  currentReport = data.reporte;
+  rows = data.rows || [];
+  document.getElementById('userLine').textContent = usuario.nombre + ' · ' + String(usuario.seccion).toUpperCase();
+  document.getElementById('reportDate').textContent = currentReport.fecha;
+  document.getElementById('reportArea').textContent = String(currentReport.seccion).toUpperCase();
+  document.getElementById('reportUpdated').textContent = currentReport.updatedAt ? new Date(currentReport.updatedAt).toLocaleString('es-MX') : '—';
+  const st = document.getElementById('reportStatus');
+  st.textContent = currentReport.estado;
+  st.className = 'status ' + String(currentReport.estado).toLowerCase();
+
+  renderRows(data.previousSummary || []);
+  renderSummary(data.previousSummary || []);
+  const locked = currentReport.estado !== 'BORRADOR';
+  document.getElementById('saveBtn').disabled = locked;
+  document.getElementById('submitBtn').disabled = locked;
 }
 
-// ────────────────────────────────────────────────────────────
-//  CONTEO
-// ────────────────────────────────────────────────────────────
-async function loadCatalogo(){
-  const list1 = document.getElementById('productList');
-  const list2 = document.getElementById('catalogList');
-  list1.innerHTML = '<div class="loading">Cargando catálogo…</div>';
-  list2.innerHTML = '<div class="loading">Cargando catálogo…</div>';
+function renderRows(previousSummary){
+  const prevMap = {};
+  previousSummary.forEach(p => prevMap[p.productoId] = p);
 
-  const data = await api({ action:'getCatalogoArea', token:TOKEN, seccion:USUARIO.seccion });
-  CATALOGO = data.catalogo || [];
-  renderConteo();
-  renderCatalogo();
-}
-
-function renderConteo(){
-  const list = document.getElementById('productList');
-  if (!CATALOGO.length) {
-    list.innerHTML = '<div class="empty">Sin productos en tu área.</div>';
+  const body = document.getElementById('rowsBody');
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="5" class="small">Todavía no hay productos en el reporte de hoy.</td></tr>';
     return;
   }
 
-  let html = '';
-  CATALOGO.forEach((p, i) => {
-    html += `
-      <div class="product-card" id="card_${i}">
-        <div class="ptop">
-          <div class="pname">${escapeHtml(p.nombre)}</div>
-          <div class="unit">${escapeHtml(p.unidad)}</div>
-        </div>
-
-        <div class="qty-row">
-          <input class="qty" id="qty_${i}" inputmode="decimal" placeholder="—" oninput="markCard(${i})">
-          <div class="qty-unit">${escapeHtml(p.unidad)}</div>
-        </div>
-
-        <div class="extras">
-          <button class="icon-btn" id="btnNote_${i}" onclick="toggleNote(${i})">+ Nota</button>
-          <button class="icon-btn" id="btnPhoto_${i}" onclick="pickPhoto(${i})">📷 Foto</button>
-        </div>
-
-        <textarea class="note" id="note_${i}" rows="2" placeholder="Observación opcional"></textarea>
-
-        <input class="file" id="file_${i}" type="file" accept="image/*" capture="environment" onchange="onPhotoSelected(${i},this)">
-        <div class="photo-box" id="photoBox_${i}">
-          <img id="photoImg_${i}" alt="">
-          <button class="xbtn" onclick="removePhoto(${i})">✕</button>
-        </div>
-        <div class="photo-state" id="photoState_${i}"></div>
-      </div>`;
-  });
-  list.innerHTML = html;
-}
-
-function markCard(i){
-  const card = document.getElementById('card_' + i);
-  const v = document.getElementById('qty_' + i).value.trim();
-  card.style.borderColor = v ? '#505050' : '';
-}
-
-function toggleNote(i){
-  const el = document.getElementById('note_' + i);
-  const btn = document.getElementById('btnNote_' + i);
-  const visible = el.style.display === 'block';
-  el.style.display = visible ? 'none' : 'block';
-  btn.classList.toggle('active', !visible);
-  btn.textContent = visible ? '+ Nota' : '− Nota';
-}
-
-function pickPhoto(i){
-  document.getElementById('file_' + i).click();
-}
-
-function onPhotoSelected(i, input){
-  const file = input.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById('photoImg_' + i).src = e.target.result;
-    document.getElementById('photoBox_' + i).style.display = 'block';
-    const btn = document.getElementById('btnPhoto_' + i);
-    btn.classList.add('active');
-    btn.textContent = '📷 ✓';
-  };
-  reader.readAsDataURL(file);
-  compressAndUpload(i, file);
-}
-
-function compressAndUpload(i, file){
-  setPhotoState(i, 'Subiendo foto…', 'loading');
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = new Image();
-    img.onload = () => {
-      let w = img.width, h = img.height, maxW = 1100;
-      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
-      const c = document.createElement('canvas');
-      c.width = w; c.height = h;
-      c.getContext('2d').drawImage(img, 0, 0, w, h);
-      const b64 = c.toDataURL('image/jpeg', 0.78).split(',')[1];
-      uploadPhoto(i, b64);
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-async function uploadPhoto(i, b64){
-  try{
-    const d = await api({
-      action:'subirFoto',
-      token:TOKEN,
-      base64:b64,
-      mimeType:'image/jpeg',
-      producto:CATALOGO[i].nombre
-    });
-    FOTO_URLS[i] = d.url;
-    setPhotoState(i, '✓ Foto lista', 'ok');
-  }catch(e){
-    delete FOTO_URLS[i];
-    setPhotoState(i, 'No se pudo subir', 'err');
-  }
-}
-
-function setPhotoState(i, msg, cls){
-  const el = document.getElementById('photoState_' + i);
-  el.textContent = msg;
-  el.className = 'photo-state ' + cls;
-}
-
-function removePhoto(i){
-  delete FOTO_URLS[i];
-  document.getElementById('file_' + i).value = '';
-  document.getElementById('photoBox_' + i).style.display = 'none';
-  document.getElementById('photoImg_' + i).src = '';
-  const btn = document.getElementById('btnPhoto_' + i);
-  btn.classList.remove('active');
-  btn.textContent = '📷 Foto';
-  setPhotoState(i, '', '');
-}
-
-async function guardarConteo(){
-  const productos = [];
-
-  CATALOGO.forEach((p, i) => {
-    const qtyRaw = document.getElementById('qty_' + i)?.value.trim();
-    if (!qtyRaw) return;
-    const cantidad = Number(qtyRaw.replace(',', '.'));
-    if (!isFinite(cantidad) || cantidad < 0) return;
-
-    productos.push({
-      id: p.id,
-      nombre: p.nombre,
-      unidad: p.unidad,
-      cantidad,
-      nota: (document.getElementById('note_' + i)?.value || '').trim(),
-      fotoUrl: FOTO_URLS[i] || ''
-    });
-  });
-
-  if (!productos.length) {
-    toast('No capturaste cantidades', true);
-    return;
-  }
-
-  const btn = document.getElementById('btnGuardar');
-  btn.disabled = true;
-  btn.textContent = 'GUARDANDO…';
-
-  try{
-    const d = await api({
-      action:'guardarConteo',
-      token:TOKEN,
-      seccion:USUARIO.seccion,
-      productos
-    });
-    toast(`✓ ${d.guardados} registro(s) guardados`);
-    await loadHistorial();
-
-    // limpiar cantidades después del guardado
-    CATALOGO.forEach((_, i) => {
-      const q = document.getElementById('qty_' + i);
-      const n = document.getElementById('note_' + i);
-      if (q) q.value = '';
-      if (n) { n.value = ''; n.style.display = 'none'; }
-      removePhoto(i);
-      markCard(i);
-      const b = document.getElementById('btnNote_' + i);
-      if (b) { b.classList.remove('active'); b.textContent = '+ Nota'; }
-    });
-  } catch(e){
-    toast('No se pudo guardar el conteo', true);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'GUARDAR CONTEO';
-  }
-}
-
-// ────────────────────────────────────────────────────────────
-//  CATÁLOGO
-// ────────────────────────────────────────────────────────────
-function renderCatalogo(){
-  const list = document.getElementById('catalogList');
-  if (!CATALOGO.length) {
-    list.innerHTML = '<div class="empty">Tu catálogo está vacío.</div>';
-    return;
-  }
-
-  let html = '';
-  CATALOGO.forEach(p => {
-    html += `
-      <div class="cat-card">
-        <div class="cat-name">${escapeHtml(p.nombre)}</div>
-        <div class="cat-meta">${escapeHtml(p.unidad)} · ${escapeHtml((p.seccion || '').toUpperCase())}</div>
-        <div class="cat-actions">
-          <button class="pill" onclick="openEditModal('${p.id}','${esc(p.nombre)}','${esc(p.unidad)}')">Editar</button>
-          <button class="pill off" onclick="toggleProducto('${p.id}', false)">Desactivar</button>
-        </div>
-      </div>`;
-  });
-  list.innerHTML = html;
-}
-
-function openAddModal(){
-  EDITING_PRODUCT = null;
-  document.getElementById('modalTitle').textContent = 'Nuevo producto';
-  document.getElementById('mNombre').value = '';
-  document.getElementById('mCantidad').value = '';
-  document.getElementById('mUnidadSelect').value = 'kg';
-  document.getElementById('mUnidadCustom').value = '';
-  document.getElementById('mUnidadCustomWrap').style.display = 'none';
-  document.getElementById('btnModalSave').textContent = 'Guardar';
-  document.getElementById('modalBg').classList.add('open');
-}
-
-function openEditModal(id, nombre, unidad){
-  EDITING_PRODUCT = { id };
-  document.getElementById('modalTitle').textContent = 'Editar producto';
-  document.getElementById('mNombre').value = nombre;
-  document.getElementById('mCantidad').value = '';
-  const preset = ['kg','g','pza','L','mL','bolsa','caja','botella','bote'];
-  if (preset.includes(unidad)) {
-    document.getElementById('mUnidadSelect').value = unidad;
-    document.getElementById('mUnidadCustomWrap').style.display = 'none';
-    document.getElementById('mUnidadCustom').value = '';
-  } else {
-    document.getElementById('mUnidadSelect').value = 'otro';
-    document.getElementById('mUnidadCustomWrap').style.display = 'block';
-    document.getElementById('mUnidadCustom').value = unidad;
-  }
-  document.getElementById('btnModalSave').textContent = 'Actualizar';
-  document.getElementById('modalBg').classList.add('open');
-}
-
-function closeModal(){
-  document.getElementById('modalBg').classList.remove('open');
-}
-
-function onUnitSelect(){
-  document.getElementById('mUnidadCustomWrap').style.display =
-    document.getElementById('mUnidadSelect').value === 'otro' ? 'block' : 'none';
-}
-
-async function saveModal(){
-  const nombre = document.getElementById('mNombre').value.trim();
-  const unitSel = document.getElementById('mUnidadSelect').value;
-  const unidad = unitSel === 'otro'
-    ? document.getElementById('mUnidadCustom').value.trim()
-    : unitSel;
-
-  if (!nombre) return toast('Escribe el nombre del producto', true);
-  if (!unidad) return toast('Escribe la unidad', true);
-
-  const btn = document.getElementById('btnModalSave');
-  btn.disabled = true;
-  const originalText = btn.textContent;
-  btn.textContent = 'Guardando…';
-
-  try{
-    if (EDITING_PRODUCT) {
-      const d = await api({
-        action:'editProducto',
-        token:TOKEN,
-        id: EDITING_PRODUCT.id,
-        nombre,
-        unidad
-      });
-      if (!d.ok) throw new Error(d.error || 'Error');
-      toast('Producto actualizado');
-    } else {
-      const cantidadRaw = document.getElementById('mCantidad').value.trim();
-      const cantidadInicial = Number(String(cantidadRaw).replace(',', '.'));
-      if (!isFinite(cantidadInicial) || cantidadInicial < 0) {
-        toast('Cantidad inicial inválida', true);
-        btn.disabled = false;
-        btn.textContent = originalText;
-        return;
-      }
-      const d = await api({
-        action:'addProductoRapido',
-        token:TOKEN,
-        seccion:USUARIO.seccion,
-        nombre,
-        unidad,
-        cantidadInicial
-      });
-      if (!d.ok) throw new Error(d.error || 'Error');
-      toast('Producto agregado');
-    }
-
-    closeModal();
-    await Promise.all([loadCatalogo(), loadHistorial()]);
-  } catch(e){
-    toast(e.message || 'No se pudo guardar', true);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = originalText;
-  }
-}
-
-async function toggleProducto(id, activo){
-  const ok = confirm(activo ? '¿Activar producto?' : '¿Desactivar producto?');
-  if (!ok) return;
-
-  try{
-    const d = await api({ action:'toggleProducto', token:TOKEN, id, activo });
-    if (!d.ok) throw new Error(d.error || 'Error');
-    toast(activo ? 'Producto activado' : 'Producto desactivado');
-    await loadCatalogo();
-  }catch(e){
-    toast(e.message || 'No se pudo cambiar el estado', true);
-  }
-}
-
-// ────────────────────────────────────────────────────────────
-//  HISTORIAL
-// ────────────────────────────────────────────────────────────
-async function loadHistorial(){
-  const list = document.getElementById('histList');
-  list.innerHTML = '<div class="loading">Cargando historial…</div>';
-
-  try{
-    const d = await api({
-      action:'getHistorialArea',
-      token:TOKEN,
-      seccion:USUARIO.seccion,
-      limit: 80
-    });
-    HISTORIAL = d.historial || [];
-    renderHistorial();
-  }catch(e){
-    list.innerHTML = '<div class="empty">No se pudo cargar el historial.</div>';
-  }
-}
-
-function renderHistorial(){
-  const list = document.getElementById('histList');
-  if (!HISTORIAL.length) {
-    list.innerHTML = '<div class="empty">Sin movimientos todavía.</div>';
-    return;
-  }
-
-  let html = '';
-  HISTORIAL.forEach(h => {
-    html += `
-      <div class="hist-card">
-        <div class="hist-top">
-          <div>
-            <div class="hist-name">${escapeHtml(h.productoNombre)}</div>
-            <div class="hist-meta">${escapeHtml(h.fecha)} · ${escapeHtml(h.hora)} · ${escapeHtml(h.usuarioNombre)}</div>
+  body.innerHTML = rows.map((r, idx) => {
+    const prev = prevMap[r.productoId];
+    const locked = currentReport.estado !== 'BORRADOR';
+    return `
+      <tr>
+        <td><input ${locked?'disabled':''} value="${escapeHtmlAttr(r.productoNombre)}" onchange="markChanged(${idx}, 'productoNombre', this.value)"></td>
+        <td><input ${locked?'disabled':''} value="${r.cantidad}" inputmode="decimal" onchange="markChanged(${idx}, 'cantidad', this.value)"></td>
+        <td>
+          <select ${locked?'disabled':''} onchange="markChanged(${idx}, 'unidad', this.value)">
+            ${renderUnitOptions(r.unidad)}
+          </select>
+        </td>
+        <td class="mono">${prev ? prev.cantidad + ' ' + prev.unidad : '—'}</td>
+        <td>
+          <div class="actions">
+            <button class="btn secondary" ${locked?'disabled':''} onclick="saveRow(${idx})">Guardar</button>
+            <button class="btn secondary" ${locked?'disabled':''} onclick="deleteRow('${r.id}')">Eliminar</button>
           </div>
-          <div class="hist-qty">${escapeHtml(String(h.cantidad))} ${escapeHtml(h.unidad)}</div>
-        </div>
-        ${h.nota ? `<div class="hist-meta" style="margin-top:8px;color:#b9b9b9">${escapeHtml(h.nota)}</div>` : ''}
-        ${h.fotoUrl ? `<div class="hist-photo"><a href="${h.fotoUrl}" target="_blank">VER FOTO →</a></div>` : ''}
-      </div>`;
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+function renderUnitOptions(selected){
+  const opts = ['pza','kg','g','L','mL','paq','otro'];
+  return opts.map(o => `<option ${o===selected?'selected':''} value="${o}">${o}</option>`).join('');
+}
+
+function renderSummary(previousSummary){
+  const wrap = document.getElementById('previousSummary');
+  if (!previousSummary.length) {
+    wrap.innerHTML = '<div class="summary-item small">No hay día anterior para comparar todavía.</div>';
+    return;
+  }
+  wrap.innerHTML = previousSummary.slice(0,8).map(r => `
+    <div class="summary-item">
+      <strong>${escapeHtml(r.nombre)}</strong><br>
+      <span class="small">Ayer: ${r.cantidad} ${r.unidad}</span>
+    </div>`).join('');
+}
+
+function markChanged(index, field, value){
+  if (field === 'cantidad') rows[index][field] = String(value).replace(',', '.');
+  else rows[index][field] = value;
+  draftChanged = true;
+}
+
+async function saveRow(index){
+  const r = rows[index];
+  const data = await api({
+    action:'saveDraftRow',
+    token,
+    detalleId: r.id,
+    nombre: r.productoNombre,
+    unidad: r.unidad,
+    cantidad: r.cantidad
   });
-  list.innerHTML = html;
+  if (!data.ok) return toast(data.error || 'No se pudo guardar', true);
+  toast('Fila guardada');
+  await loadToday();
+}
+
+async function saveAll(){
+  for (let i = 0; i < rows.length; i++) {
+    const data = await api({
+      action:'saveDraftRow',
+      token,
+      detalleId: rows[i].id,
+      nombre: rows[i].productoNombre,
+      unidad: rows[i].unidad,
+      cantidad: rows[i].cantidad
+    });
+    if (!data.ok) return toast(data.error || ('Error en fila ' + (i+1)), true);
+  }
+  draftChanged = false;
+  toast('Cambios guardados');
+  await loadToday();
+}
+
+async function addProduct(){
+  if (currentReport.estado !== 'BORRADOR') return;
+  const nombre = document.getElementById('newNombre').value.trim();
+  const cantidad = document.getElementById('newCantidad').value.trim();
+  const unidad = document.getElementById('newUnidad').value;
+  const data = await api({ action:'saveDraftRow', token, nombre, cantidad, unidad });
+  if (!data.ok) return toast(data.error || 'No se pudo agregar', true);
+
+  document.getElementById('newNombre').value = '';
+  document.getElementById('newCantidad').value = '';
+  document.getElementById('newUnidad').value = 'pza';
+  toast('Producto agregado');
+  await loadToday();
+}
+
+async function deleteRow(detalleId){
+  if (currentReport.estado !== 'BORRADOR') return;
+  if (!confirm('¿Eliminar esta fila del reporte de hoy?')) return;
+  const data = await api({ action:'deleteDraftRow', token, detalleId });
+  if (!data.ok) return toast(data.error || 'No se pudo eliminar', true);
+  toast('Fila eliminada');
+  await loadToday();
+}
+
+async function submitReport(){
+  if (currentReport.estado !== 'BORRADOR') return;
+  if (!confirm('¿Dar de alta el reporte? Después de enviarlo el área ya no podrá modificarlo.')) return;
+  const data = await api({ action:'submitTodayReport', token });
+  if (!data.ok) return toast(data.error || 'No se pudo enviar', true);
+  toast('Reporte enviado');
+  await loadToday();
 }
 
 function escapeHtml(str){
-  return String(str ?? '')
-    .replaceAll('&','&amp;')
-    .replaceAll('<','&lt;')
-    .replaceAll('>','&gt;')
-    .replaceAll('"','&quot;')
-    .replaceAll("'","&#39;");
+  return String(str ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 }
-function esc(str){ return escapeHtml(str); }
-
-document.getElementById('modalBg').addEventListener('click', e => {
-  if (e.target.id === 'modalBg') closeModal();
-});
+function escapeHtmlAttr(str){ return escapeHtml(str); }
 </script>
 </body>
 </html>
-
