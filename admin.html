@@ -1,557 +1,384 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Pares 84×88 — Admin</title>
+<title>Los Pares — Admin</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Space+Mono:wght@400;700&display=swap');
-  :root{
-    --bg:#090909;--panel:#111;--line:#1d1d1d;--text:#e8e4dc;--muted:#777;
-    --ok:#3ecf8e;--err:#e05555;--warn:#c084fc;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace}
-  header{
-    position:sticky;top:0;z-index:20;background:rgba(9,9,9,.96);backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--line);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px
-  }
-  .hl{display:flex;gap:12px;align-items:center}
-  .logo{
-    width:42px;height:42px;border-radius:14px;background:#111;border:1px solid #262626;display:grid;place-items:center;
-    font-family:'Cormorant Garamond',serif;font-size:15px
-  }
-  .tt{font-size:11px;letter-spacing:3px;font-weight:700}
-  .uu{font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:3px}
-  .badge{font-size:9px;font-weight:700;letter-spacing:2px;padding:7px 12px;border-radius:999px;background:#17121f;color:#c084fc;border:1px solid #36234b}
-  .btn{border:none;cursor:pointer;font-family:'Space Mono',monospace}
-  .btn-sm{
-    padding:10px 14px;border-radius:12px;background:#151515;color:var(--text);
-    border:1px solid #262626;font-size:10px;letter-spacing:2px
-  }
-  nav{display:flex;background:#0f0f0f;border-bottom:1px solid var(--line);overflow:auto}
-  .tab{
-    flex:1 0 auto;padding:13px 12px;text-align:center;font-size:10px;letter-spacing:1px;color:#5e5e5e;
-    text-transform:uppercase;border-bottom:2px solid transparent;cursor:pointer;min-width:90px
-  }
-  .tab.active{color:var(--text);border-bottom-color:var(--text)}
-  .screen{display:none;padding:18px 16px}
-  .screen.active{display:block}
-  .label{font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
-  .toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
-  .toolbar .group{display:flex;gap:8px;flex-wrap:wrap}
-  .cards{display:grid;gap:12px}
-  .card,.audit,.alert,.cat-card{
-    background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px
-  }
-  .title{font-family:'Cormorant Garamond',serif;font-size:24px;line-height:1.05}
-  .meta{font-size:10px;color:#7a7a7a;letter-spacing:1px;margin-top:5px}
-  .chips{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}
-  .chip{background:#0d0d0d;border:1px solid #252525;border-radius:14px;padding:12px}
-  .chip-l{font-size:9px;color:#6f6f6f;letter-spacing:2px;text-transform:uppercase}
-  .chip-v{font-size:18px;font-weight:700;margin-top:6px}
-  .dot{width:8px;height:8px;border-radius:999px;display:inline-block;margin-right:8px}
-  .dot.cocina{background:var(--ok)} .dot.barra{background:var(--err)}
-  .list{display:grid;gap:10px}
-  .audit-grid{display:grid;gap:10px}
-  .audit-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-  .audit-action{font-size:10px;letter-spacing:2px;padding:6px 10px;border-radius:999px;border:1px solid #2a2a2a;color:#d3d3d3;background:#151515;text-transform:uppercase}
-  .audit-detail{margin-top:8px;padding:10px 12px;border-radius:12px;background:#0d0d0d;border:1px solid #242424;color:#bcbcbc;font-size:11px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
-  .cat-top,.alert-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-  .tag{
-    padding:5px 10px;border-radius:999px;border:1px solid #2b2b2b;color:#8e8e8e;font-size:9px;letter-spacing:2px;text-transform:uppercase
-  }
-  .tag.cocina{background:#0c1c14;border-color:#19402b;color:var(--ok)}
-  .tag.barra{background:#1b0d0d;border-color:#4a1d1d;color:var(--err)}
-  .cat-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-  .pill{
-    padding:8px 10px;border-radius:10px;font-size:10px;letter-spacing:1px;border:1px solid #2a2a2a;background:#151515;color:#d0d0d0
-  }
-  .pill.off{color:var(--err);border-color:#4a1d1d;background:#1b0d0d}
-  .alert-val{font-size:14px;font-weight:700;margin-top:10px}
-  .empty,.loading{text-align:center;padding:60px 16px;color:#444;font-size:11px;letter-spacing:3px}
-  .toast{
-    position:fixed;top:82px;left:50%;transform:translateX(-50%);padding:12px 18px;border-radius:12px;font-size:10px;
-    letter-spacing:2px;z-index:30;opacity:0;pointer-events:none;transition:.2s
-  }
-  .toast.show{opacity:1}
-  .toast.ok{background:#0c1c14;border:1px solid #19402b;color:var(--ok)}
-  .toast.err{background:#1b0d0d;border:1px solid #4a1d1d;color:var(--err)}
-  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:flex-end;justify-content:center;z-index:50}
-  .modal-bg.open{display:flex}
-  .modal{width:min(520px,100%);background:#111;border:1px solid var(--line);border-radius:22px 22px 0 0;padding:22px 18px 24px}
-  .modal-title{font-family:'Cormorant Garamond',serif;font-size:28px;margin-bottom:14px}
-  .grid{display:grid;gap:12px}
-  .field label{display:block;margin-bottom:7px;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
-  .txt,.sel{
-    width:100%;background:#0b0b0b;border:1px solid #252525;border-radius:14px;color:var(--text);padding:14px 14px;font-size:15px
-  }
-  @media (min-width:840px){
-    .screen{max-width:1100px;margin:0 auto}
-    .cards.two{grid-template-columns:repeat(2,1fr)}
-  }
+:root{
+  --bg:#f5f8fc; --panel:#fff; --line:#d8e3f3; --text:#20324a; --muted:#6b7a90;
+  --primary:#1f6fff; --primary-soft:#eaf2ff; --ok:#16a34a; --err:#dc2626; --warn:#f59e0b;
+}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{position:sticky;top:0;background:white;border-bottom:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:20}
+.h-left{display:flex;gap:12px;align-items:center}.logo{width:46px;height:46px;border-radius:16px;background:#0b0b0b;padding:6px;object-fit:contain}
+.t1{font-size:20px;font-weight:700}.t2{font-size:12px;color:var(--muted)}
+.btn{border:none;border-radius:14px;padding:10px 14px;cursor:pointer;font-weight:700}
+.btn.primary{background:var(--primary);color:white}.btn.secondary{background:white;border:1px solid var(--line);color:var(--text)} .btn.green{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0}
+.wrap{max-width:1250px;margin:0 auto;padding:18px 16px 50px}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.tab{padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:white;cursor:pointer;font-weight:700}
+.tab.active{background:var(--primary-soft);color:var(--primary);border-color:#cfe0ff}
+.screen{display:none}.screen.active{display:block}
+.grid-two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:18px}
+.card h2{margin:0 0 8px;font-size:20px}.small{font-size:12px;color:var(--muted);line-height:1.5}
+.table-wrap{margin-top:14px;background:white;border:1px solid var(--line);border-radius:18px;overflow:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px 10px;border-bottom:1px solid #edf2fa;text-align:left;font-size:14px}
+th{background:#f8fbff;font-size:12px;color:#5f6f85;text-transform:uppercase}
+.badge{display:inline-block;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:700}
+.badge.borrador{background:#eff6ff;color:#1d4ed8}.badge.enviado{background:#fff7ed;color:#9a3412}.badge.revisado,.badge.cerrado{background:#ecfdf3;color:#166534}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;font-size:14px}
+textarea{min-height:92px;resize:vertical}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:40;padding:16px}
+.modal-bg.open{display:flex}.modal{width:min(620px,96vw);background:white;border-radius:20px;border:1px solid var(--line);padding:20px}
+.toast{position:fixed;top:84px;left:50%;transform:translateX(-50%);padding:12px 16px;border-radius:14px;display:none;z-index:50}
+.toast.show{display:block}.toast.ok{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0}.toast.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+@media(max-width:1000px){.grid-two{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <header>
-  <div class="hl">
-    <div class="logo">84×88</div>
+  <div class="h-left">
+    <img class="logo" src="logo_pares.png" alt="Los Pares">
     <div>
-      <div class="tt">PARES 84×88</div>
-      <div class="uu" id="userLine">Administrador</div>
+      <div class="t1">Admin — Declaración diaria</div>
+      <div class="t2" id="adminLine">Cargando…</div>
     </div>
   </div>
-  <div style="display:flex;gap:8px;align-items:center">
-    <span class="badge">ADMIN</span>
-    <button class="btn-sm" onclick="logout()">SALIR</button>
+  <div class="actions">
+    <button class="btn secondary" onclick="loadDashboard()">Recargar</button>
+    <button class="btn secondary" onclick="logout()">Salir</button>
   </div>
 </header>
 
-<nav>
-  <div class="tab active" id="tCocina" onclick="showTab('cocina')">Cocina</div>
-  <div class="tab" id="tBarra" onclick="showTab('barra')">Barra</div>
-  <div class="tab" id="tAuditoria" onclick="showTab('auditoria')">Auditoría</div>
-  <div class="tab" id="tAlertas" onclick="showTab('alertas')">Alertas</div>
-</nav>
-
-<section class="screen active" id="sCocina">
-  <div class="toolbar">
-    <div class="label">Declarado por cocina</div>
-    <div class="group">
-      <button class="btn-sm" onclick="loadDashboard()">RECARGAR</button>
-      <button class="btn-sm" onclick="openAddModal('cocina')">+ PRODUCTO</button>
-    </div>
+<div class="wrap">
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('dashboard', this)">Dashboard</button>
+    <button class="tab" onclick="showTab('usuarios', this)">Usuarios</button>
+    <button class="tab" onclick="showTab('catalogo', this)">Catálogo</button>
   </div>
-  <div id="cocinaList" class="cards two"><div class="loading">Cargando…</div></div>
-</section>
 
-<section class="screen" id="sBarra">
-  <div class="toolbar">
-    <div class="label">Declarado por barra</div>
-    <div class="group">
-      <button class="btn-sm" onclick="loadDashboard()">RECARGAR</button>
-      <button class="btn-sm" onclick="openAddModal('barra')">+ PRODUCTO</button>
+  <section id="screen-dashboard" class="screen active">
+    <div class="grid-two">
+      <div class="card">
+        <div class="row">
+          <div><h2>Cocina</h2><div class="small">Comparativo del reporte del día contra el día anterior.</div></div>
+          <span class="badge" id="kitchenStatus">—</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Producto</th><th>Hoy</th><th>Ayer</th><th>Diferencia</th><th>Acciones</th></tr></thead>
+            <tbody id="kitchenBody"><tr><td colspan="5" class="small">Cargando…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <div><h2>Barra</h2><div class="small">Aquí cotejas lo que reporta barra contra tu sistema general.</div></div>
+          <span class="badge" id="barStatus">—</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Producto</th><th>Hoy</th><th>Ayer</th><th>Diferencia</th><th>Acciones</th></tr></thead>
+            <tbody id="barBody"><tr><td colspan="5" class="small">Cargando…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
     </div>
-  </div>
-  <div id="barraList" class="cards two"><div class="loading">Cargando…</div></div>
-</section>
+  </section>
 
-<section class="screen" id="sAuditoria">
-  <div class="toolbar">
-    <div class="label">Cambios recientes</div>
-    <div class="group">
-      <button class="btn-sm" onclick="loadAuditoria()">RECARGAR</button>
+  <section id="screen-usuarios" class="screen">
+    <div class="grid-two">
+      <div class="card">
+        <h2>Alta / edición de usuarios</h2>
+        <div class="small">Da de alta responsables individuales. Así sabes exactamente quién modificó o reportó algo.</div>
+        <div style="display:grid;gap:12px;margin-top:16px">
+          <input id="uNombre" placeholder="Nombre del usuario">
+          <div class="grid-two" style="grid-template-columns:1fr 1fr">
+            <select id="uRol">
+              <option value="STAFF">STAFF</option>
+              <option value="ADMIN">ADMIN</option>
+            </select>
+            <select id="uSeccion">
+              <option value="cocina">cocina</option>
+              <option value="barra">barra</option>
+              <option value="ambas">ambas</option>
+            </select>
+          </div>
+          <input id="uPin" maxlength="4" placeholder="PIN de 4 dígitos">
+          <div class="actions">
+            <button class="btn primary" onclick="saveUser()">Guardar usuario</button>
+            <button class="btn secondary" onclick="resetUserForm()">Limpiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Usuarios activos</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nombre</th><th>Rol</th><th>Área</th><th>PIN</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody id="usersBody"><tr><td colspan="6" class="small">Cargando…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
     </div>
-  </div>
-  <div id="auditList" class="audit-grid"><div class="loading">Cargando…</div></div>
-</section>
+  </section>
 
-<section class="screen" id="sAlertas">
-  <div class="toolbar">
-    <div class="label">Revisión rápida</div>
-    <div class="group">
-      <button class="btn-sm" onclick="buildAlerts()">ACTUALIZAR</button>
+  <section id="screen-catalogo" class="screen">
+    <div class="grid-two">
+      <div class="card">
+        <div class="row">
+          <h2>Catálogo cocina</h2>
+          <button class="btn secondary" onclick="loadCatalog('cocina')">Recargar</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Producto</th><th>Tipo</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody id="catalogKitchenBody"><tr><td colspan="4" class="small">Cargando…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="row">
+          <h2>Catálogo barra</h2>
+          <button class="btn secondary" onclick="loadCatalog('barra')">Recargar</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Producto</th><th>Tipo</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody id="catalogBarBody"><tr><td colspan="4" class="small">Cargando…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
     </div>
-  </div>
-  <div id="alertList" class="list"><div class="loading">Cargando…</div></div>
-</section>
+  </section>
+</div>
 
-<div class="toast" id="toast"></div>
-
-<div class="modal-bg" id="modalBg">
+<div class="modal-bg" id="reportModal">
   <div class="modal">
-    <div class="modal-title" id="modalTitle">Producto</div>
-    <div class="grid">
-      <div class="field">
-        <label>Producto</label>
-        <input class="txt" id="mNombre" placeholder="Ej. Jarabe natural">
+    <div class="row">
+      <div>
+        <h2 id="modalTitle">Detalle del reporte</h2>
+        <div class="small" id="modalMeta">—</div>
       </div>
-      <div class="field">
-        <label>Unidad</label>
-        <select class="sel" id="mUnidadSelect" onchange="onUnitSelect()">
-          <option value="kg">kg</option>
-          <option value="g">g</option>
-          <option value="pza">pza</option>
-          <option value="L">L</option>
-          <option value="mL">mL</option>
-          <option value="bolsa">bolsa</option>
-          <option value="caja">caja</option>
-          <option value="botella">botella</option>
-          <option value="bote">bote</option>
-          <option value="otro">otro</option>
-        </select>
-      </div>
-      <div class="field" id="mUnidadCustomWrap" style="display:none">
-        <label>Unidad personalizada</label>
-        <input class="txt" id="mUnidadCustom" placeholder="Ej. charola">
-      </div>
-      <div class="field" id="mCantidadWrap">
-        <label>Cantidad inicial</label>
-        <input class="txt" id="mCantidad" inputmode="decimal" placeholder="0">
-      </div>
+      <button class="btn secondary" onclick="closeModal()">Cerrar</button>
     </div>
-    <div style="display:flex;gap:10px;margin-top:16px">
-      <button class="btn-sm" style="flex:1" onclick="closeModal()">Cancelar</button>
-      <button class="btn-sm" style="flex:2;background:var(--text);color:#111" id="btnModalSave" onclick="saveModal()">Guardar</button>
+
+    <div class="table-wrap" style="margin-top:14px">
+      <table>
+        <thead><tr><th>Producto</th><th>Hoy</th><th>Ayer</th><th>Diferencia</th><th>Acciones</th></tr></thead>
+        <tbody id="modalRows"><tr><td colspan="5" class="small">Cargando…</td></tr></tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:14px">
+      <label class="small">Notas admin</label>
+      <textarea id="adminNotes" placeholder="Observaciones del cotejo…"></textarea>
+    </div>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn green" onclick="reviewReport('REVISADO')">Marcar revisado</button>
+      <button class="btn primary" onclick="reviewReport('CERRADO')">Cerrar reporte</button>
     </div>
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
-const API = 'https://script.google.com/macros/s/AKfycbzQ3VGL57gj-GA0AfgTAL6djmdEJgQKYEnhtNnJbX0N1ei9MK1Tzfq-aRT2sykhCaM/exec';
+const API = 'REEMPLAZA_AQUI_TU_WEBAPP_URL';
+const token = localStorage.getItem('token');
+let usuario = {};
+let dashboard = null;
+let editingUserId = '';
+let currentReport = null;
 
-let TOKEN = localStorage.getItem('token');
-let USUARIO = null;
-let DASHBOARD = { cocina:[], barra:[] };
-let AUDITORIA = [];
-let MODAL_MODE = 'add';
-let EDITING = null;
-let TARGET_SECCION = 'cocina';
-
-(function init(){
-  try { USUARIO = JSON.parse(localStorage.getItem('usuario') || '{}'); } catch(_) {}
-  if (!TOKEN || !USUARIO || USUARIO.rol !== 'admin') {
-    window.location.href = 'index.html';
-    return;
-  }
-  document.getElementById('userLine').textContent = (USUARIO.nombre || 'Admin') + ' · control general';
-  bootstrap();
+(function boot(){
+  try { usuario = JSON.parse(localStorage.getItem('usuario') || '{}'); } catch(_) {}
+  if (!token || !usuario.rol) return location.href = 'index.html';
+  if (String(usuario.rol).toUpperCase() !== 'ADMIN') return location.href = 'staff.html';
+  document.getElementById('adminLine').textContent = usuario.nombre + ' · administrador';
+  loadDashboard();
+  loadUsers();
+  loadCatalog('cocina');
+  loadCatalog('barra');
 })();
 
 function logout(){
   localStorage.removeItem('token');
   localStorage.removeItem('usuario');
-  window.location.href = 'index.html';
+  location.href = 'index.html';
 }
-
-function showTab(name){
-  ['cocina','barra','auditoria','alertas'].forEach(t => {
-    document.getElementById('s' + cap(t)).classList.toggle('active', t === name);
-    document.getElementById('t' + cap(t)).classList.toggle('active', t === name);
-  });
+function showTab(name, btn){
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
 }
-function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
-
-function toast(msg, isErr=false){
+function toast(msg, err=false){
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.className = 'toast show ' + (isErr ? 'err' : 'ok');
-  setTimeout(() => t.className = 'toast', 2600);
+  t.className = 'toast show ' + (err ? 'err' : 'ok');
+  setTimeout(() => t.className = 'toast', 2500);
 }
-
 async function api(payload){
   const r = await fetch(API, { method:'POST', body: JSON.stringify(payload) });
-  const data = await r.json();
-  if (!data.ok && String(data.error || '').toLowerCase().includes('sesión')) {
-    logout();
-    throw new Error('Sesión expirada');
-  }
-  return data;
+  return await r.json();
 }
 
-async function bootstrap(){
-  await Promise.all([loadDashboard(), loadAuditoria()]);
-  buildAlerts();
-}
-
-// ────────────────────────────────────────────────────────────
-//  DASHBOARD
-// ────────────────────────────────────────────────────────────
 async function loadDashboard(){
-  document.getElementById('cocinaList').innerHTML = '<div class="loading">Cargando…</div>';
-  document.getElementById('barraList').innerHTML = '<div class="loading">Cargando…</div>';
-
-  try{
-    const d = await api({ action:'getDashboardAdmin', token:TOKEN });
-    DASHBOARD = d.dashboard || { cocina:[], barra:[] };
-    renderArea('cocina');
-    renderArea('barra');
-  }catch(e){
-    document.getElementById('cocinaList').innerHTML = '<div class="empty">Error.</div>';
-    document.getElementById('barraList').innerHTML = '<div class="empty">Error.</div>';
-  }
+  const data = await api({ action:'getAdminDashboard', token });
+  if (!data.ok) return toast(data.error || 'No se pudo cargar', true);
+  dashboard = data;
+  renderAreaCard('cocina', data.cocina, 'kitchenBody', 'kitchenStatus');
+  renderAreaCard('barra', data.barra, 'barBody', 'barStatus');
 }
-
-function renderArea(area){
-  const list = document.getElementById(area + 'List');
-  const items = DASHBOARD[area] || [];
-
-  if (!items.length) {
-    list.innerHTML = '<div class="empty">Sin productos.</div>';
+function renderAreaCard(area, block, bodyId, statusId){
+  const body = document.getElementById(bodyId);
+  const st = document.getElementById(statusId);
+  if (!block || !block.reporte) {
+    st.textContent = 'SIN REPORTE';
+    st.className = 'badge borrador';
+    body.innerHTML = '<tr><td colspan="5" class="small">Todavía no hay reporte de hoy para ' + area + '.</td></tr>';
     return;
   }
+  st.textContent = block.reporte.estado;
+  st.className = 'badge ' + String(block.reporte.estado).toLowerCase();
+  body.innerHTML = block.rows.map(r => `
+    <tr>
+      <td>${escapeHtml(r.nombre)}<br><span class="small">Modificó: ${escapeHtml(r.updatedByName || '—')}</span></td>
+      <td>${r.cantidad} ${escapeHtml(r.unidad)}</td>
+      <td>${r.ayerCantidad === null ? '—' : (r.ayerCantidad + ' ' + escapeHtml(r.unidad))}</td>
+      <td>${r.diferenciaVsAyer === null ? '—' : signed(r.diferenciaVsAyer)}</td>
+      <td><button class="btn secondary" onclick="openReport('${block.reporte.id}')">Ver / corregir</button></td>
+    </tr>`).join('');
+}
 
-  let html = '';
-  items.forEach(p => {
-    const last = p.ultimoConteo;
-    html += `
-      <div class="card">
-        <div class="title">${escapeHtml(p.nombre)}</div>
-        <div class="meta">${escapeHtml(p.unidad)} · <span class="dot ${area}"></span>${area.toUpperCase()}</div>
+async function openReport(reporteId){
+  const data = await api({ action:'getAdminReport', token, reporteId });
+  if (!data.ok) return toast(data.error || 'No se pudo abrir', true);
+  currentReport = data.reporte;
+  document.getElementById('modalTitle').textContent = 'Reporte ' + currentReport.seccion.toUpperCase() + ' · ' + currentReport.fecha;
+  document.getElementById('modalMeta').textContent = 'Estado: ' + currentReport.estado + ' · enviado por: ' + (currentReport.submittedByName || '—');
+  document.getElementById('adminNotes').value = currentReport.notasAdmin || '';
+  document.getElementById('modalRows').innerHTML = data.rows.map(r => `
+    <tr>
+      <td>${escapeHtml(r.nombre)}<br><span class="small">Último cambio: ${escapeHtml(r.lastUpdatedBy || '—')}</span></td>
+      <td><input value="${r.cantidad}" inputmode="decimal" onchange="adminUpdateRow('${r.detalleId}', this.value)"></td>
+      <td>${r.ayerCantidad === null ? '—' : (r.ayerCantidad + ' ' + escapeHtml(r.unidad))}</td>
+      <td>${r.diferenciaVsAyer === null ? '—' : signed(r.diferenciaVsAyer)}</td>
+      <td><button class="btn secondary" onclick="adminDeleteRow('${r.detalleId}')">Eliminar</button></td>
+    </tr>`).join('');
+  document.getElementById('reportModal').classList.add('open');
+}
+function closeModal(){ document.getElementById('reportModal').classList.remove('open'); }
 
-        <div class="chips">
-          <div class="chip">
-            <div class="chip-l">Último conteo</div>
-            <div class="chip-v">${last ? escapeHtml(String(last.cantidad)) + ' ' + escapeHtml(p.unidad) : '—'}</div>
-          </div>
-          <div class="chip">
-            <div class="chip-l">Capturado por</div>
-            <div class="chip-v" style="font-size:14px">${last ? escapeHtml(last.usuarioNombre) : 'Sin captura'}</div>
-          </div>
+async function adminUpdateRow(detalleId, cantidad){
+  const data = await api({ action:'adminUpdateRow', token, detalleId, cantidad });
+  if (!data.ok) return toast(data.error || 'No se pudo actualizar', true);
+  toast('Fila corregida');
+}
+async function adminDeleteRow(detalleId){
+  if (!confirm('¿Eliminar esta fila del reporte?')) return;
+  const data = await api({ action:'adminDeleteRow', token, detalleId });
+  if (!data.ok) return toast(data.error || 'No se pudo eliminar', true);
+  toast('Fila eliminada');
+  await openReport(currentReport.id);
+  await loadDashboard();
+}
+async function reviewReport(estado){
+  const notas = document.getElementById('adminNotes').value.trim();
+  const data = await api({ action:'adminReviewReport', token, reporteId: currentReport.id, estado, notas });
+  if (!data.ok) return toast(data.error || 'No se pudo actualizar', true);
+  toast('Reporte actualizado');
+  closeModal();
+  await loadDashboard();
+}
+
+async function loadUsers(){
+  const data = await api({ action:'listUsers', token });
+  if (!data.ok) return toast(data.error || 'No se pudieron cargar usuarios', true);
+  document.getElementById('usersBody').innerHTML = data.users.map(u => `
+    <tr>
+      <td>${escapeHtml(u.nombre)}</td>
+      <td>${escapeHtml(u.rol)}</td>
+      <td>${escapeHtml(u.seccion)}</td>
+      <td>${escapeHtml(u.pin)}</td>
+      <td>${u.activo ? 'Activo' : 'Inactivo'}</td>
+      <td>
+        <div class="actions">
+          <button class="btn secondary" onclick='editUser(${JSON.stringify(u).replace(/'/g,"&#39;")})'>Editar</button>
+          <button class="btn secondary" onclick="toggleUser('${u.id}', ${!u.activo})">${u.activo ? 'Desactivar' : 'Activar'}</button>
         </div>
-
-        <div class="meta" style="margin-top:12px">
-          ${last ? `${escapeHtml(last.fecha)} · ${escapeHtml(last.hora)}` : 'Todavía sin conteo'}
-        </div>
-
-        ${last && last.nota ? `<div class="meta" style="margin-top:10px;color:#cfcfcf">${escapeHtml(last.nota)}</div>` : ''}
-        ${last && last.fotoUrl ? `<div style="margin-top:12px"><a class="btn-sm" style="display:inline-block;text-decoration:none" target="_blank" href="${last.fotoUrl}">VER FOTO</a></div>` : ''}
-
-        <div class="cat-actions">
-          <button class="pill" onclick="openEditModal('${p.id}','${esc(p.nombre)}','${esc(p.unidad)}','${area}')">Editar</button>
-          <button class="pill off" onclick="toggleProducto('${p.id}', false)">Desactivar</button>
-        </div>
-      </div>`;
-  });
-  list.innerHTML = html;
+      </td>
+    </tr>`).join('');
+}
+function editUser(u){
+  editingUserId = u.id;
+  document.getElementById('uNombre').value = u.nombre;
+  document.getElementById('uRol').value = u.rol;
+  document.getElementById('uSeccion').value = u.seccion;
+  document.getElementById('uPin').value = u.pin;
+}
+function resetUserForm(){
+  editingUserId = '';
+  document.getElementById('uNombre').value = '';
+  document.getElementById('uRol').value = 'STAFF';
+  document.getElementById('uSeccion').value = 'cocina';
+  document.getElementById('uPin').value = '';
+}
+async function saveUser(){
+  const payload = {
+    action:'saveUser', token, id: editingUserId,
+    nombre: document.getElementById('uNombre').value.trim(),
+    rol: document.getElementById('uRol').value,
+    seccion: document.getElementById('uSeccion').value,
+    pin: document.getElementById('uPin').value.trim()
+  };
+  const data = await api(payload);
+  if (!data.ok) return toast(data.error || 'No se pudo guardar usuario', true);
+  toast('Usuario guardado');
+  resetUserForm();
+  await loadUsers();
+}
+async function toggleUser(id, activo){
+  const data = await api({ action:'toggleUser', token, id, activo });
+  if (!data.ok) return toast(data.error || 'No se pudo cambiar usuario', true);
+  toast('Usuario actualizado');
+  await loadUsers();
 }
 
-// ────────────────────────────────────────────────────────────
-//  AUDITORÍA
-// ────────────────────────────────────────────────────────────
-async function loadAuditoria(){
-  const list = document.getElementById('auditList');
-  list.innerHTML = '<div class="loading">Cargando…</div>';
-
-  try{
-    const d = await api({ action:'getAuditoria', token:TOKEN, limit:120 });
-    AUDITORIA = d.auditoria || [];
-    renderAuditoria();
-  }catch(e){
-    list.innerHTML = '<div class="empty">No se pudo cargar.</div>';
-  }
+async function loadCatalog(seccion){
+  const data = await api({ action:'listCatalog', token, seccion });
+  if (!data.ok) return toast(data.error || 'No se pudo cargar catálogo', true);
+  const bodyId = seccion === 'cocina' ? 'catalogKitchenBody' : 'catalogBarBody';
+  document.getElementById(bodyId).innerHTML = data.items.map(p => `
+    <tr>
+      <td>${escapeHtml(p.nombre)}</td>
+      <td>${escapeHtml(p.unidad)}</td>
+      <td>${p.activo ? 'Activo' : 'Inactivo'}</td>
+      <td><button class="btn secondary" onclick="toggleCatalog('${p.id}', ${!p.activo}, '${seccion}')">${p.activo ? 'Desactivar' : 'Activar'}</button></td>
+    </tr>`).join('');
+}
+async function toggleCatalog(id, activo, seccion){
+  const data = await api({ action:'toggleCatalog', token, id, activo });
+  if (!data.ok) return toast(data.error || 'No se pudo cambiar catálogo', true);
+  toast('Catálogo actualizado');
+  await loadCatalog(seccion);
 }
 
-function renderAuditoria(){
-  const list = document.getElementById('auditList');
-  if (!AUDITORIA.length) {
-    list.innerHTML = '<div class="empty">Sin movimientos recientes.</div>';
-    return;
-  }
-
-  let html = '';
-  AUDITORIA.forEach(a => {
-    html += `
-      <div class="audit">
-        <div class="audit-top">
-          <div>
-            <div class="title" style="font-size:22px">${escapeHtml(a.usuarioNombre)}</div>
-            <div class="meta">${escapeHtml(a.timestamp ? new Date(a.timestamp).toLocaleString('es-MX') : '')} · ${escapeHtml((a.seccion || '').toUpperCase())}</div>
-          </div>
-          <div class="audit-action">${escapeHtml(a.accion)}</div>
-        </div>
-        <div class="meta" style="margin-top:10px">${escapeHtml(a.entidad)} · ${escapeHtml(a.entidadId)}</div>
-        <div class="audit-detail">${prettyJson(a.detalle)}</div>
-      </div>`;
-  });
-  list.innerHTML = html;
-}
-
-function prettyJson(raw){
-  try{
-    const obj = JSON.parse(raw || '{}');
-    return escapeHtml(JSON.stringify(obj, null, 2));
-  }catch(_){
-    return escapeHtml(String(raw || ''));
-  }
-}
-
-// ────────────────────────────────────────────────────────────
-//  ALERTAS
-// ────────────────────────────────────────────────────────────
-function buildAlerts(){
-  const list = document.getElementById('alertList');
-  const alerts = [];
-
-  ['cocina','barra'].forEach(area => {
-    (DASHBOARD[area] || []).forEach(p => {
-      if (!p.ultimoConteo) {
-        alerts.push({
-          area,
-          titulo: p.nombre,
-          valor: 'Sin conteo todavía',
-          detalle: 'Producto activo sin captura registrada'
-        });
-      } else {
-        const ts = new Date(p.ultimoConteo.timestamp || 0).getTime();
-        const hours = (Date.now() - ts) / 36e5;
-        if (hours > 24) {
-          alerts.push({
-            area,
-            titulo: p.nombre,
-            valor: 'Conteo viejo',
-            detalle: 'Último conteo con más de 24 horas'
-          });
-        }
-      }
-    });
-  });
-
-  if (!alerts.length) {
-    list.innerHTML = '<div class="empty">Sin alertas rápidas por ahora.</div>';
-    return;
-  }
-
-  let html = '';
-  alerts.forEach(a => {
-    html += `
-      <div class="alert">
-        <div class="alert-top">
-          <div>
-            <div class="title" style="font-size:22px">${escapeHtml(a.titulo)}</div>
-            <div class="meta">${escapeHtml(a.detalle)}</div>
-          </div>
-          <div class="tag ${a.area}">${a.area}</div>
-        </div>
-        <div class="alert-val">${escapeHtml(a.valor)}</div>
-      </div>`;
-  });
-  list.innerHTML = html;
-}
-
-// ────────────────────────────────────────────────────────────
-//  MODAL / PRODUCTOS
-// ────────────────────────────────────────────────────────────
-function onUnitSelect(){
-  document.getElementById('mUnidadCustomWrap').style.display =
-    document.getElementById('mUnidadSelect').value === 'otro' ? 'block' : 'none';
-}
-
-function openAddModal(seccion){
-  MODAL_MODE = 'add';
-  TARGET_SECCION = seccion;
-  EDITING = null;
-  document.getElementById('modalTitle').textContent = 'Nuevo producto · ' + seccion.toUpperCase();
-  document.getElementById('mNombre').value = '';
-  document.getElementById('mCantidad').value = '';
-  document.getElementById('mUnidadSelect').value = 'kg';
-  document.getElementById('mUnidadCustom').value = '';
-  document.getElementById('mUnidadCustomWrap').style.display = 'none';
-  document.getElementById('mCantidadWrap').style.display = 'block';
-  document.getElementById('btnModalSave').textContent = 'Guardar';
-  document.getElementById('modalBg').classList.add('open');
-}
-
-function openEditModal(id, nombre, unidad, seccion){
-  MODAL_MODE = 'edit';
-  TARGET_SECCION = seccion;
-  EDITING = { id };
-  document.getElementById('modalTitle').textContent = 'Editar producto';
-  document.getElementById('mNombre').value = nombre;
-  document.getElementById('mCantidad').value = '';
-  const preset = ['kg','g','pza','L','mL','bolsa','caja','botella','bote'];
-  if (preset.includes(unidad)) {
-    document.getElementById('mUnidadSelect').value = unidad;
-    document.getElementById('mUnidadCustomWrap').style.display = 'none';
-    document.getElementById('mUnidadCustom').value = '';
-  } else {
-    document.getElementById('mUnidadSelect').value = 'otro';
-    document.getElementById('mUnidadCustomWrap').style.display = 'block';
-    document.getElementById('mUnidadCustom').value = unidad;
-  }
-  document.getElementById('mCantidadWrap').style.display = 'none';
-  document.getElementById('btnModalSave').textContent = 'Actualizar';
-  document.getElementById('modalBg').classList.add('open');
-}
-
-function closeModal(){
-  document.getElementById('modalBg').classList.remove('open');
-}
-
-async function saveModal(){
-  const nombre = document.getElementById('mNombre').value.trim();
-  const unitSel = document.getElementById('mUnidadSelect').value;
-  const unidad = unitSel === 'otro'
-    ? document.getElementById('mUnidadCustom').value.trim()
-    : unitSel;
-
-  if (!nombre) return toast('Escribe el nombre del producto', true);
-  if (!unidad) return toast('Escribe la unidad', true);
-
-  const btn = document.getElementById('btnModalSave');
-  btn.disabled = true;
-  const original = btn.textContent;
-  btn.textContent = 'Guardando…';
-
-  try{
-    if (MODAL_MODE === 'add') {
-      const cantidadInicial = Number(String(document.getElementById('mCantidad').value || '').replace(',', '.'));
-      if (!isFinite(cantidadInicial) || cantidadInicial < 0) {
-        toast('Cantidad inicial inválida', true);
-        btn.disabled = false;
-        btn.textContent = original;
-        return;
-      }
-      const d = await api({
-        action:'addProductoRapido',
-        token:TOKEN,
-        seccion:TARGET_SECCION,
-        nombre,
-        unidad,
-        cantidadInicial
-      });
-      if (!d.ok) throw new Error(d.error || 'Error');
-      toast('Producto agregado');
-    } else {
-      const d = await api({
-        action:'editProducto',
-        token:TOKEN,
-        id: EDITING.id,
-        nombre,
-        unidad
-      });
-      if (!d.ok) throw new Error(d.error || 'Error');
-      toast('Producto actualizado');
-    }
-
-    closeModal();
-    await Promise.all([loadDashboard(), loadAuditoria()]);
-    buildAlerts();
-  }catch(e){
-    toast(e.message || 'No se pudo guardar', true);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = original;
-  }
-}
-
-async function toggleProducto(id, activo){
-  const ok = confirm(activo ? '¿Activar producto?' : '¿Desactivar producto?');
-  if (!ok) return;
-
-  try{
-    const d = await api({ action:'toggleProducto', token:TOKEN, id, activo });
-    if (!d.ok) throw new Error(d.error || 'Error');
-    toast(activo ? 'Producto activado' : 'Producto desactivado');
-    await Promise.all([loadDashboard(), loadAuditoria()]);
-    buildAlerts();
-  }catch(e){
-    toast(e.message || 'No se pudo cambiar el estado', true);
-  }
-}
-
+function signed(n){ return n > 0 ? '+' + n : String(n); }
 function escapeHtml(str){
-  return String(str ?? '')
-    .replaceAll('&','&amp;')
-    .replaceAll('<','&lt;')
-    .replaceAll('>','&gt;')
-    .replaceAll('"','&quot;')
-    .replaceAll("'","&#39;");
+  return String(str ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 }
-function esc(str){ return escapeHtml(str); }
-
-document.getElementById('modalBg').addEventListener('click', e => {
-  if (e.target.id === 'modalBg') closeModal();
+document.getElementById('reportModal').addEventListener('click', e => {
+  if (e.target.id === 'reportModal') closeModal();
 });
 </script>
 </body>
