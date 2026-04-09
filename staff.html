@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,16 +9,19 @@
   --bg:#f5f8fc; --panel:#fff; --line:#d8e3f3; --text:#20324a; --muted:#6b7a90;
   --primary:#1f6fff; --primary-soft:#eaf2ff; --ok:#16a34a; --err:#dc2626; --warn:#f59e0b;
 }
-*{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
 header{position:sticky;top:0;background:white;border-bottom:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:20}
 .h-left{display:flex;gap:12px;align-items:center}
 .logo{width:46px;height:46px;border-radius:16px;background:#0b0b0b;padding:6px;object-fit:contain}
-.t1{font-size:20px;font-weight:700}.t2{font-size:12px;color:var(--muted)}
+.t1{font-size:20px;font-weight:700}
+.t2{font-size:12px;color:var(--muted)}
 .btn{border:none;border-radius:14px;padding:12px 16px;cursor:pointer;font-weight:700}
-.btn.primary{background:var(--primary);color:white}.btn.secondary{background:white;border:1px solid var(--line);color:var(--text)}
+.btn.primary{background:var(--primary);color:white}
+.btn.secondary{background:white;border:1px solid var(--line);color:var(--text)}
 .btn.warn{background:#fff7ed;color:#9a3412;border:1px solid #fdba74}
-.wrap{max-width:1100px;margin:0 auto;padding:18px 16px 120px}
-.grid-top{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
+.wrap{max-width:1200px;margin:0 auto;padding:18px 16px 120px}
+.grid-top{display:grid;grid-template-columns:1.25fr .95fr;gap:16px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:18px}
 .card h2{margin:0 0 8px;font-size:20px}
 .small{font-size:12px;color:var(--muted);line-height:1.5}
@@ -39,11 +41,18 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
 .summary-list{display:grid;gap:10px}
 .summary-item{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#fbfdff}
 .fixed-bottom{position:fixed;left:0;right:0;bottom:0;padding:14px 16px;background:linear-gradient(180deg,transparent,#f5f8fc 28%)}
-.bottom-inner{max-width:1100px;margin:0 auto;display:flex;gap:10px;justify-content:flex-end}
+.bottom-inner{max-width:1200px;margin:0 auto;display:flex;gap:10px;justify-content:flex-end}
 .badge{font-size:12px;padding:6px 10px;border-radius:999px;background:var(--primary-soft);color:var(--primary);border:1px solid #cfe0ff}
 .toast{position:fixed;top:84px;left:50%;transform:translateX(-50%);padding:12px 16px;border-radius:14px;display:none;z-index:50}
-.toast.show{display:block}.toast.ok{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0}.toast.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
-@media(max-width:900px){.grid-top{grid-template-columns:1fr}.actions{flex-direction:column}.bottom-inner{flex-direction:column}}
+.toast.show{display:block}
+.toast.ok{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0}
+.toast.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+.who{margin-top:4px;font-size:11px;color:#64748b}
+@media(max-width:950px){
+  .grid-top{grid-template-columns:1fr}
+  .actions{flex-direction:column}
+  .bottom-inner{flex-direction:column}
+}
 </style>
 </head>
 <body>
@@ -66,13 +75,14 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
     <div class="card">
       <div class="row">
         <div>
-          <h2>Reporte de hoy</h2>
-          <div class="small">No vuelves a capturar todo desde cero. El sistema hereda el último valor válido de cada producto y solo modificas cantidades, agregas nuevos productos o eliminas filas del día.</div>
+          <h2>Existencia viva del día</h2>
+          <div class="small">Todos los usuarios de esta área trabajan sobre el mismo catálogo del día. Cada cambio guarda quién fue el último en modificar el producto.</div>
         </div>
         <div class="status" id="reportStatus">—</div>
       </div>
+
       <div style="margin-top:12px" class="small">
-        Fecha: <strong id="reportDate">—</strong> · Área: <strong id="reportArea">—</strong> · Última actualización: <strong id="reportUpdated">—</strong>
+        Fecha: <strong id="reportDate">—</strong> · Área: <strong id="reportArea">—</strong> · Última actualización general: <strong id="reportUpdated">—</strong>
       </div>
 
       <div class="table-wrap" style="margin-top:16px">
@@ -80,9 +90,9 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
           <thead>
             <tr>
               <th style="width:34%">Producto</th>
-              <th style="width:16%">Cantidad</th>
-              <th style="width:16%">Tipo</th>
-              <th style="width:14%">Último capturado</th>
+              <th style="width:14%">Cantidad</th>
+              <th style="width:14%">Tipo</th>
+              <th style="width:18%">Último valor válido</th>
               <th style="width:20%">Acciones</th>
             </tr>
           </thead>
@@ -94,14 +104,16 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
     </div>
 
     <div class="card">
-      <h2>Agregar producto al reporte</h2>
-      <div class="small">Úsalo solo si hoy apareció un producto nuevo en tu área. Si ya existe, solo modifica la fila.</div>
+      <h2>Agregar producto al catálogo compartido</h2>
+      <div class="small">Si el producto ya existe en el catálogo de tu área, selecciónalo o escríbelo igual. El sistema actualizará la fila existente y no duplicará productos.</div>
 
       <div style="display:grid;gap:12px;margin-top:16px">
         <div>
           <label class="small">Producto</label>
-          <input id="newNombre" placeholder="Ej. Ribeye steak">
+          <input id="newNombre" list="catalogOptions" placeholder="Ej. Ribeye steak">
+          <datalist id="catalogOptions"></datalist>
         </div>
+
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
           <div>
             <label class="small">Cantidad</label>
@@ -120,13 +132,20 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
             </select>
           </div>
         </div>
-        <button class="btn primary" onclick="addProduct()">Agregar al reporte de hoy</button>
+
+        <button class="btn primary" onclick="addProduct()">Agregar o actualizar</button>
       </div>
 
       <div style="margin-top:18px">
-        <h2 style="font-size:18px">Comparativo rápido vs último capturado</h2>
+        <h2 style="font-size:18px">Comparativo rápido vs último valor válido</h2>
         <div id="previousSummary" class="summary-list" style="margin-top:10px">
           <div class="small">Cargando…</div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#fbfdff">
+        <div class="small">
+          Productos activos del catálogo compartido: <strong id="catalogCount">0</strong>
         </div>
       </div>
     </div>
@@ -148,7 +167,7 @@ const token = localStorage.getItem('token');
 let usuario = {};
 let currentReport = null;
 let rows = [];
-let draftChanged = false;
+let catalog = [];
 let isLoading = false;
 
 (function boot(){
@@ -181,33 +200,54 @@ async function loadToday(){
   currentReport = null;
   document.getElementById('saveBtn').disabled = true;
   document.getElementById('submitBtn').disabled = true;
+
   const data = await api({ action:'getStaffToday', token });
-  if (!data.ok) { toast(data.error || 'No se pudo cargar', true); return; }
+  if (!data.ok) {
+    isLoading = false;
+    return toast(data.error || 'No se pudo cargar', true);
+  }
 
   usuario = data.usuario;
   currentReport = data.reporte;
   rows = data.rows || [];
+  catalog = data.catalog || [];
+
   document.getElementById('userLine').textContent = usuario.nombre + ' · ' + String(usuario.seccion).toUpperCase();
   document.getElementById('reportDate').textContent = currentReport.fecha;
   document.getElementById('reportArea').textContent = String(currentReport.seccion).toUpperCase();
-  document.getElementById('reportUpdated').textContent = currentReport.updatedAt ? new Date(currentReport.updatedAt).toLocaleString('es-MX') : '—';
+  document.getElementById('reportUpdated').textContent = currentReport.updatedAt
+    ? new Date(currentReport.updatedAt).toLocaleString('es-MX')
+    : '—';
+
   const st = document.getElementById('reportStatus');
   st.textContent = currentReport.estado;
   st.className = 'status ' + String(currentReport.estado).toLowerCase();
 
+  renderCatalogOptions();
   renderRows(data.previousSummary || []);
   renderSummary(data.previousSummary || []);
+
+  document.getElementById('catalogCount').textContent = catalog.length;
+
   const locked = !currentReport || currentReport.estado !== 'BORRADOR';
   document.getElementById('saveBtn').disabled = locked;
   document.getElementById('submitBtn').disabled = locked;
+
   isLoading = false;
+}
+
+function renderCatalogOptions(){
+  const dl = document.getElementById('catalogOptions');
+  dl.innerHTML = catalog.map(p => `<option value="${escapeHtmlAttr(p.nombre)}"></option>`).join('');
 }
 
 function renderRows(previousSummary){
   const prevMap = {};
   previousSummary.forEach(p => {
-    const key = p.productoId ? p.productoId : ('NM:' + String(p.nombre || '').toLowerCase());
-    prevMap[key] = p;
+    const key1 = p.productoId ? p.productoId : '';
+    const key2 = 'NM:' + String(p.nombre || '').toLowerCase();
+    if (key1) prevMap[key1] = p;
+    prevMap[key2] = p;
   });
 
   const body = document.getElementById('rowsBody');
@@ -217,18 +257,27 @@ function renderRows(previousSummary){
   }
 
   body.innerHTML = rows.map((r, idx) => {
-    const prev = prevMap[r.productoId || ('NM:' + String(r.productoNombre || '').toLowerCase())];
+    const prev = prevMap[r.productoId] || prevMap['NM:' + String(r.productoNombre || '').toLowerCase()];
     const locked = currentReport.estado !== 'BORRADOR';
+    const qty = (r.cantidad == null ? 0 : r.cantidad);
+
     return `
       <tr>
-        <td><input ${locked?'disabled':''} value="${escapeHtmlAttr(r.productoNombre)}" onchange="markChanged(${idx}, 'productoNombre', this.value)"></td>
-        <td><input ${locked?'disabled':''} value="${r.cantidad}" inputmode="decimal" onchange="markChanged(${idx}, 'cantidad', this.value)"></td>
+        <td>
+          <input ${locked?'disabled':''} value="${escapeHtmlAttr(r.productoNombre)}" onchange="markChanged(${idx}, 'productoNombre', this.value)">
+          <div class="who">
+            Último cambio: ${escapeHtml(r.updatedByName || '—')} ${r.updatedAt ? '· ' + escapeHtml(new Date(r.updatedAt).toLocaleString('es-MX')) : ''}
+          </div>
+        </td>
+        <td>
+          <input ${locked?'disabled':''} value="${qty}" inputmode="decimal" onchange="markChanged(${idx}, 'cantidad', this.value)">
+        </td>
         <td>
           <select ${locked?'disabled':''} onchange="markChanged(${idx}, 'unidad', this.value)">
             ${renderUnitOptions(r.unidad)}
           </select>
         </td>
-        <td class="mono">${prev ? prev.cantidad + ' ' + prev.unidad : '—'}</td>
+        <td class="mono">${prev ? (prev.cantidad + ' ' + prev.unidad + (prev.fecha ? ' · ' + prev.fecha : '')) : '—'}</td>
         <td>
           <div class="actions">
             <button class="btn secondary" ${locked?'disabled':''} onclick="saveRow(${idx})">Guardar</button>
@@ -247,25 +296,27 @@ function renderUnitOptions(selected){
 function renderSummary(previousSummary){
   const wrap = document.getElementById('previousSummary');
   if (!previousSummary.length) {
-    wrap.innerHTML = '<div class="summary-item small">Todavía no hay una referencia capturada para comparar.</div>';
+    wrap.innerHTML = '<div class="summary-item small">Todavía no hay una referencia histórica válida para comparar.</div>';
     return;
   }
-  wrap.innerHTML = previousSummary.slice(0,8).map(r => `
+
+  wrap.innerHTML = previousSummary.slice(0,10).map(r => `
     <div class="summary-item">
       <strong>${escapeHtml(r.nombre)}</strong><br>
-      <span class="small">Último capturado: ${r.cantidad} ${r.unidad}${r.fecha ? (' · ' + r.fecha) : ''}</span>
-    </div>`).join('');
+      <span class="small">Último valor válido: ${r.cantidad} ${r.unidad}${r.fecha ? (' · ' + r.fecha) : ''}</span>
+    </div>
+  `).join('');
 }
 
 function markChanged(index, field, value){
   if (field === 'cantidad') rows[index][field] = String(value).replace(',', '.');
   else rows[index][field] = value;
-  draftChanged = true;
 }
 
 async function saveRow(index){
   if (isLoading || !currentReport || !currentReport.id) return toast('Espera a que cargue el reporte', true);
   const r = rows[index];
+
   const data = await api({
     action:'saveDraftRow',
     token,
@@ -274,6 +325,7 @@ async function saveRow(index){
     unidad: r.unidad,
     cantidad: r.cantidad
   });
+
   if (!data.ok) return toast(data.error || 'No se pudo guardar', true);
   toast('Fila guardada');
   await loadToday();
@@ -281,6 +333,7 @@ async function saveRow(index){
 
 async function saveAll(){
   if (isLoading || !currentReport || !currentReport.id) return toast('Espera a que cargue el reporte', true);
+
   for (let i = 0; i < rows.length; i++) {
     const data = await api({
       action:'saveDraftRow',
@@ -290,9 +343,9 @@ async function saveAll(){
       unidad: rows[i].unidad,
       cantidad: rows[i].cantidad
     });
-    if (!data.ok) return toast(data.error || ('Error en fila ' + (i+1)), true);
+    if (!data.ok) return toast(data.error || ('Error en fila ' + (i + 1)), true);
   }
-  draftChanged = false;
+
   toast('Cambios guardados');
   await loadToday();
 }
@@ -300,25 +353,37 @@ async function saveAll(){
 async function addProduct(){
   if (isLoading || !currentReport || !currentReport.id) return toast('Espera a que cargue el reporte', true);
   if (currentReport.estado !== 'BORRADOR') return;
+
   const nombre = document.getElementById('newNombre').value.trim();
   const cantidad = document.getElementById('newCantidad').value.trim();
   const unidad = document.getElementById('newUnidad').value;
-  const data = await api({ action:'saveDraftRow', token, nombre, cantidad, unidad });
+
+  const data = await api({
+    action:'saveDraftRow',
+    token,
+    nombre,
+    cantidad,
+    unidad
+  });
+
   if (!data.ok) return toast(data.error || 'No se pudo agregar', true);
 
   document.getElementById('newNombre').value = '';
   document.getElementById('newCantidad').value = '';
   document.getElementById('newUnidad').value = 'pza';
-  toast('Producto agregado');
+
+  toast('Producto agregado o actualizado');
   await loadToday();
 }
 
 async function deleteRow(detalleId){
   if (isLoading || !currentReport || !currentReport.id) return toast('Espera a que cargue el reporte', true);
   if (currentReport.estado !== 'BORRADOR') return;
-  if (!confirm('¿Eliminar esta fila del reporte de hoy?')) return;
+  if (!confirm('¿Eliminar esta fila del catálogo operativo del día?')) return;
+
   const data = await api({ action:'deleteDraftRow', token, detalleId });
   if (!data.ok) return toast(data.error || 'No se pudo eliminar', true);
+
   toast('Fila eliminada');
   await loadToday();
 }
@@ -327,14 +392,18 @@ async function submitReport(){
   if (isLoading || !currentReport || !currentReport.id) return toast('Espera a que cargue el reporte', true);
   if (currentReport.estado !== 'BORRADOR') return;
   if (!confirm('¿Dar de alta el reporte? Después de enviarlo el área ya no podrá modificarlo.')) return;
+
   const data = await api({ action:'submitTodayReport', token });
   if (!data.ok) return toast(data.error || 'No se pudo enviar', true);
+
   toast('Reporte enviado');
   await loadToday();
 }
 
 function escapeHtml(str){
-  return String(str ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+  return String(str ?? '').replace(/[&<>"']/g, s => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[s]));
 }
 function escapeHtmlAttr(str){ return escapeHtml(str); }
 </script>
