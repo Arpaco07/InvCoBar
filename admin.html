@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,12 +9,17 @@
   --bg:#f5f8fc; --panel:#fff; --line:#d8e3f3; --text:#20324a; --muted:#6b7a90;
   --primary:#1f6fff; --primary-soft:#eaf2ff; --ok:#16a34a; --err:#dc2626; --warn:#f59e0b;
 }
-*{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
 header{position:sticky;top:0;background:white;border-bottom:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:20}
-.h-left{display:flex;gap:12px;align-items:center}.logo{width:46px;height:46px;border-radius:16px;background:#0b0b0b;padding:6px;object-fit:contain}
-.t1{font-size:20px;font-weight:700}.t2{font-size:12px;color:var(--muted)}
+.h-left{display:flex;gap:12px;align-items:center}
+.logo{width:46px;height:46px;border-radius:16px;background:#0b0b0b;padding:6px;object-fit:contain}
+.t1{font-size:20px;font-weight:700}
+.t2{font-size:12px;color:var(--muted)}
 .btn{border:none;border-radius:14px;padding:10px 14px;cursor:pointer;font-weight:700}
-.btn.primary{background:var(--primary);color:white}.btn.secondary{background:white;border:1px solid var(--line);color:var(--text)} .btn.green{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0}
+.btn.primary{background:var(--primary);color:white}
+.btn.secondary{background:white;border:1px solid var(--line);color:var(--text)}
+.btn.green{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0}
 .wrap{max-width:1250px;margin:0 auto;padding:18px 16px 50px}
 .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
 .tab{padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:white;cursor:pointer;font-weight:700}
@@ -23,21 +27,28 @@ header{position:sticky;top:0;background:white;border-bottom:1px solid var(--line
 .screen{display:none}.screen.active{display:block}
 .grid-two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:18px}
-.card h2{margin:0 0 8px;font-size:20px}.small{font-size:12px;color:var(--muted);line-height:1.5}
+.card h2{margin:0 0 8px;font-size:20px}
+.small{font-size:12px;color:var(--muted);line-height:1.5}
 .table-wrap{margin-top:14px;background:white;border:1px solid var(--line);border-radius:18px;overflow:auto}
 table{width:100%;border-collapse:collapse}
-th,td{padding:12px 10px;border-bottom:1px solid #edf2fa;text-align:left;font-size:14px}
+th,td{padding:12px 10px;border-bottom:1px solid #edf2fa;text-align:left;font-size:14px;vertical-align:top}
 th{background:#f8fbff;font-size:12px;color:#5f6f85;text-transform:uppercase}
 .badge{display:inline-block;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:700}
-.badge.borrador{background:#eff6ff;color:#1d4ed8}.badge.enviado{background:#fff7ed;color:#9a3412}.badge.revisado,.badge.cerrado{background:#ecfdf3;color:#166534}
+.badge.borrador{background:#eff6ff;color:#1d4ed8}
+.badge.enviado{background:#fff7ed;color:#9a3412}
+.badge.revisado,.badge.cerrado{background:#ecfdf3;color:#166534}
 .row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;font-size:14px}
 textarea{min-height:92px;resize:vertical}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:40;padding:16px}
-.modal-bg.open{display:flex}.modal{width:min(620px,96vw);background:white;border-radius:20px;border:1px solid var(--line);padding:20px}
+.modal-bg.open{display:flex}
+.modal{width:min(760px,96vw);background:white;border-radius:20px;border:1px solid var(--line);padding:20px;max-height:90vh;overflow:auto}
 .toast{position:fixed;top:84px;left:50%;transform:translateX(-50%);padding:12px 16px;border-radius:14px;display:none;z-index:50}
-.toast.show{display:block}.toast.ok{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0}.toast.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+.toast.show{display:block}
+.toast.ok{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0}
+.toast.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+.version-line{margin-top:6px;font-size:11px;color:#7b8aa1}
 @media(max-width:1000px){.grid-two{grid-template-columns:1fr}}
 </style>
 </head>
@@ -48,6 +59,7 @@ textarea{min-height:92px;resize:vertical}
     <div>
       <div class="t1">Admin — Declaración diaria</div>
       <div class="t2" id="adminLine">Cargando…</div>
+      <div class="version-line" id="versionLine">Versión: —</div>
     </div>
   </div>
   <div class="actions">
@@ -67,26 +79,26 @@ textarea{min-height:92px;resize:vertical}
     <div class="grid-two">
       <div class="card">
         <div class="row">
-          <div><h2>Cocina</h2><div class="small">Comparativo del reporte del día contra el último valor capturado de cada producto.</div></div>
+          <div><h2>Cocina</h2><div class="small">Comparativo del reporte del día contra inventario actual y último valor válido.</div></div>
           <span class="badge" id="kitchenStatus">—</span>
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Producto</th><th>Hoy</th><th>Último capturado</th><th>Diferencia</th><th>Acciones</th></tr></thead>
-            <tbody id="kitchenBody"><tr><td colspan="5" class="small">Cargando…</td></tr></tbody>
+            <thead><tr><th>Producto</th><th>Hoy</th><th>Inventario actual</th><th>Último válido</th><th>Diferencia</th><th>Acciones</th></tr></thead>
+            <tbody id="kitchenBody"><tr><td colspan="6" class="small">Cargando…</td></tr></tbody>
           </table>
         </div>
       </div>
 
       <div class="card">
         <div class="row">
-          <div><h2>Barra</h2><div class="small">Aquí cotejas lo que reporta barra contra el último valor capturado y puedes corregirlo.</div></div>
+          <div><h2>Barra</h2><div class="small">Aquí cotejas barra contra inventario actual y contra histórico.</div></div>
           <span class="badge" id="barStatus">—</span>
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Producto</th><th>Hoy</th><th>Último capturado</th><th>Diferencia</th><th>Acciones</th></tr></thead>
-            <tbody id="barBody"><tr><td colspan="5" class="small">Cargando…</td></tr></tbody>
+            <thead><tr><th>Producto</th><th>Hoy</th><th>Inventario actual</th><th>Último válido</th><th>Diferencia</th><th>Acciones</th></tr></thead>
+            <tbody id="barBody"><tr><td colspan="6" class="small">Cargando…</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -132,7 +144,6 @@ textarea{min-height:92px;resize:vertical}
   </section>
 
   <section id="screen-catalogo" class="screen">
-
     <div class="card" style="margin-bottom:16px">
       <h2>Alta / edición de catálogo</h2>
       <div class="small">Aquí puedes crear o corregir productos base para cocina o barra.</div>
@@ -166,7 +177,7 @@ textarea{min-height:92px;resize:vertical}
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Producto</th><th>Tipo</th><th>Último capturado</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <thead><tr><th>Producto</th><th>Tipo</th><th>Inventario actual</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
             <tbody id="catalogKitchenBody"><tr><td colspan="6" class="small">Cargando…</td></tr></tbody>
           </table>
         </div>
@@ -178,7 +189,7 @@ textarea{min-height:92px;resize:vertical}
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Producto</th><th>Tipo</th><th>Último capturado</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <thead><tr><th>Producto</th><th>Tipo</th><th>Inventario actual</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead>
             <tbody id="catalogBarBody"><tr><td colspan="6" class="small">Cargando…</td></tr></tbody>
           </table>
         </div>
@@ -199,8 +210,8 @@ textarea{min-height:92px;resize:vertical}
 
     <div class="table-wrap" style="margin-top:14px">
       <table>
-        <thead><tr><th>Producto</th><th>Hoy</th><th>Último capturado</th><th>Diferencia</th><th>Acciones</th></tr></thead>
-        <tbody id="modalRows"><tr><td colspan="5" class="small">Cargando…</td></tr></tbody>
+        <thead><tr><th>Producto</th><th>Hoy</th><th>Inventario actual</th><th>Último válido</th><th>Diferencia</th><th>Acciones</th></tr></thead>
+        <tbody id="modalRows"><tr><td colspan="6" class="small">Cargando…</td></tr></tbody>
       </table>
     </div>
 
@@ -239,6 +250,7 @@ textarea{min-height:92px;resize:vertical}
 
 <script>
 const API = 'https://script.google.com/macros/s/AKfycbyBaaFpvm44mgPupgDFTR4ZhMpp4MRc9D_8waIzno8iI1czX-Jt1mGBQymALL9oZneTXw/exec';
+const APP_VERSION = 'v8-2026-04-09-01';
 const token = localStorage.getItem('token');
 let usuario = {};
 let dashboard = null;
@@ -248,19 +260,24 @@ let editingCatalogId = '';
 
 (function boot(){
   try { usuario = JSON.parse(localStorage.getItem('usuario') || '{}'); } catch(_) {}
-  if (!token || !usuario.rol) return location.href = 'index.html';
-  if (String(usuario.rol).toUpperCase() !== 'ADMIN') return location.href = 'staff.html';
+  if (!token || !usuario.rol) return routeTo('index');
+  if (String(usuario.rol).toUpperCase() !== 'ADMIN') return routeTo('staff');
   document.getElementById('adminLine').textContent = usuario.nombre + ' · administrador';
+  document.getElementById('versionLine').textContent = 'Versión: ' + APP_VERSION;
   loadDashboard();
   loadUsers();
   loadCatalog('cocina');
   loadCatalog('barra');
 })();
 
+function routeTo(name){
+  location.href = name + '.html?v=' + encodeURIComponent(APP_VERSION);
+}
+
 function logout(){
   localStorage.removeItem('token');
   localStorage.removeItem('usuario');
-  location.href = 'index.html';
+  routeTo('index');
 }
 function showTab(name, btn){
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -275,7 +292,11 @@ function toast(msg, err=false){
   setTimeout(() => t.className = 'toast', 2500);
 }
 async function api(payload){
-  const r = await fetch(API, { method:'POST', body: JSON.stringify(payload) });
+  const r = await fetch(API + '?v=' + encodeURIComponent(APP_VERSION), {
+    method:'POST',
+    body: JSON.stringify(payload),
+    cache: 'no-store'
+  });
   return await r.json();
 }
 
@@ -286,13 +307,14 @@ async function loadDashboard(){
   renderAreaCard('cocina', data.cocina, 'kitchenBody', 'kitchenStatus');
   renderAreaCard('barra', data.barra, 'barBody', 'barStatus');
 }
+
 function renderAreaCard(area, block, bodyId, statusId){
   const body = document.getElementById(bodyId);
   const st = document.getElementById(statusId);
   if (!block || !block.reporte) {
     st.textContent = 'SIN REPORTE';
     st.className = 'badge borrador';
-    body.innerHTML = '<tr><td colspan="5" class="small">Todavía no hay reporte de hoy para ' + area + '.</td></tr>';
+    body.innerHTML = '<tr><td colspan="6" class="small">Todavía no hay reporte de hoy para ' + area + '.</td></tr>';
     return;
   }
   st.textContent = block.reporte.estado;
@@ -301,6 +323,7 @@ function renderAreaCard(area, block, bodyId, statusId){
     <tr>
       <td>${escapeHtml(r.nombre)}<br><span class="small">Modificó: ${escapeHtml(r.updatedByName || '—')}</span></td>
       <td>${r.cantidad} ${escapeHtml(r.unidad)}</td>
+      <td>${r.inventarioActual === null ? '—' : (r.inventarioActual + ' ' + escapeHtml(r.unidad))}</td>
       <td>${r.referenciaCantidad === null ? '—' : (r.referenciaCantidad + ' ' + escapeHtml(r.unidad) + (r.referenciaFecha ? '<br><span class="small">' + escapeHtml(r.referenciaFecha) + '</span>' : ''))}</td>
       <td>${r.diferenciaVsReferencia === null ? '—' : signed(r.diferenciaVsReferencia)}</td>
       <td><button class="btn secondary" onclick="openReport('${block.reporte.id}')">Ver / corregir</button></td>
@@ -321,6 +344,7 @@ async function openReport(reporteId){
     <tr>
       <td>${escapeHtml(r.nombre)}<br><span class="small">Último cambio: ${escapeHtml(r.lastUpdatedBy || '—')}</span></td>
       <td><input value="${r.cantidad}" inputmode="decimal" onchange="adminUpdateRow('${r.detalleId}', this.value)"></td>
+      <td>${r.inventarioActual === null ? '—' : (r.inventarioActual + ' ' + escapeHtml(r.unidad))}</td>
       <td>${r.referenciaCantidad === null ? '—' : (r.referenciaCantidad + ' ' + escapeHtml(r.unidad) + (r.referenciaFecha ? '<br><span class="small">' + escapeHtml(r.referenciaFecha) + '</span>' : ''))}</td>
       <td>${r.diferenciaVsReferencia === null ? '—' : signed(r.diferenciaVsReferencia)}</td>
       <td><button class="btn secondary" onclick="adminDeleteRow('${r.detalleId}')">Eliminar</button></td>
@@ -333,6 +357,8 @@ async function adminUpdateRow(detalleId, cantidad){
   const data = await api({ action:'adminUpdateRow', token, detalleId, cantidad });
   if (!data.ok) return toast(data.error || 'No se pudo actualizar', true);
   toast('Fila corregida');
+  await openReport(currentReport.id);
+  await loadDashboard();
 }
 async function adminDeleteRow(detalleId){
   if (!confirm('¿Eliminar esta fila del reporte?')) return;
@@ -419,7 +445,12 @@ async function loadCatalog(seccion){
       <td>${p.ultimaCantidad === null ? '—' : (p.ultimaCantidad + ' ' + escapeHtml(p.ultimaUnidad || p.unidad))}</td>
       <td>${p.ultimaFecha ? escapeHtml(p.ultimaFecha) : '—'}</td>
       <td>${p.activo ? 'Activo' : 'Inactivo'}</td>
-      <td><div class="actions"><button class="btn secondary" onclick='editCatalogItem(${JSON.stringify(p).replace(/'/g,"&#39;")}, "${seccion}")'>Editar</button><button class="btn secondary" onclick="toggleCatalog('${p.id}', ${!p.activo}, '${seccion}')">${p.activo ? 'Desactivar' : 'Activar'}</button></div></td>
+      <td>
+        <div class="actions">
+          <button class="btn secondary" onclick='editCatalogItem(${JSON.stringify(p).replace(/'/g,"&#39;")}, "${seccion}")'>Editar</button>
+          <button class="btn secondary" onclick="toggleCatalog('${p.id}', ${!p.activo}, '${seccion}')">${p.activo ? 'Desactivar' : 'Activar'}</button>
+        </div>
+      </td>
     </tr>`).join('');
 }
 async function toggleCatalog(id, activo, seccion){
@@ -428,7 +459,6 @@ async function toggleCatalog(id, activo, seccion){
   toast('Catálogo actualizado');
   await loadCatalog(seccion);
 }
-
 
 async function adminAddRow(){
   const nombre = document.getElementById('adminNewNombre').value.trim();
@@ -468,7 +498,6 @@ async function saveCatalogForm(){
   const data = await api(payload);
   if (!data.ok) return toast(data.error || 'No se pudo guardar producto', true);
   toast('Catálogo guardado');
-  const target = payload.seccion;
   resetCatalogForm();
   await loadCatalog('cocina');
   await loadCatalog('barra');
