@@ -6,12 +6,23 @@
 <title>Los Pares — Staff</title>
 <style>
 :root{
-  --bg:#f5f8fc; --panel:#fff; --line:#d8e3f3; --text:#20324a; --muted:#6b7a90;
-  --primary:#1f6fff; --primary-soft:#eaf2ff; --ok:#16a34a; --err:#dc2626; --warn:#f59e0b;
+  --bg:#f5f8fc;
+  --panel:#fff;
+  --line:#d8e3f3;
+  --text:#20324a;
+  --muted:#6b7a90;
+  --primary:#1f6fff;
+  --primary-soft:#eaf2ff;
+  --ok:#16a34a;
+  --err:#dc2626;
+  --warn:#f59e0b;
 }
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
-header{position:sticky;top:0;background:white;border-bottom:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:20}
+header{
+  position:sticky;top:0;background:white;border-bottom:1px solid var(--line);
+  padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:20
+}
 .h-left{display:flex;gap:12px;align-items:center}
 .logo{width:46px;height:46px;border-radius:16px;background:#0b0b0b;padding:6px;object-fit:contain}
 .t1{font-size:20px;font-weight:700}
@@ -20,7 +31,7 @@ header{position:sticky;top:0;background:white;border-bottom:1px solid var(--line
 .btn.primary{background:var(--primary);color:white}
 .btn.secondary{background:white;border:1px solid var(--line);color:var(--text)}
 .btn.warn{background:#fff7ed;color:#9a3412;border:1px solid #fdba74}
-.wrap{max-width:1200px;margin:0 auto;padding:18px 16px 120px}
+.wrap{max-width:1280px;margin:0 auto;padding:18px 16px 120px}
 .grid-top{display:grid;grid-template-columns:1.25fr .95fr;gap:16px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:18px}
 .card h2{margin:0 0 8px;font-size:20px}
@@ -32,26 +43,68 @@ header{position:sticky;top:0;background:white;border-bottom:1px solid var(--line
 .row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .table-wrap{margin-top:16px;background:white;border:1px solid var(--line);border-radius:18px;overflow:hidden}
 table{width:100%;border-collapse:collapse}
-th,td{padding:12px 10px;border-bottom:1px solid #edf2fa;text-align:left;font-size:14px;vertical-align:middle}
+th,td{padding:12px 10px;border-bottom:1px solid #edf2fa;text-align:left;font-size:14px;vertical-align:top}
 th{background:#f8fbff;font-size:12px;color:#5f6f85;text-transform:uppercase;letter-spacing:.5px}
-input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;font-size:14px}
+input,select{
+  width:100%;padding:11px 12px;border:1px solid var(--line);
+  border-radius:12px;font-size:15px;background:white
+}
 input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px rgba(31,111,255,.12)}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
 .mono{font-family:ui-monospace, SFMono-Regular, Menlo, monospace}
 .summary-list{display:grid;gap:10px}
 .summary-item{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#fbfdff}
 .fixed-bottom{position:fixed;left:0;right:0;bottom:0;padding:14px 16px;background:linear-gradient(180deg,transparent,#f5f8fc 28%)}
-.bottom-inner{max-width:1200px;margin:0 auto;display:flex;gap:10px;justify-content:flex-end}
-.badge{font-size:12px;padding:6px 10px;border-radius:999px;background:var(--primary-soft);color:var(--primary);border:1px solid #cfe0ff}
+.bottom-inner{max-width:1280px;margin:0 auto;display:flex;gap:10px;justify-content:flex-end}
 .toast{position:fixed;top:84px;left:50%;transform:translateX(-50%);padding:12px 16px;border-radius:14px;display:none;z-index:50}
 .toast.show{display:block}
 .toast.ok{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0}
 .toast.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
-.who{margin-top:4px;font-size:11px;color:#64748b}
+.who{margin-top:6px;font-size:12px;color:#64748b;line-height:1.35}
+.base-pill{
+  display:inline-block;margin-top:6px;padding:5px 9px;border-radius:999px;
+  background:#eef6ff;color:#1d4ed8;border:1px solid #cfe0ff;font-size:12px;font-weight:700
+}
+.version-line{margin-top:8px;font-size:11px;color:#7b8aa1}
+.desktop-only{display:inline}
+.mobile-only{display:none}
+
 @media(max-width:950px){
   .grid-top{grid-template-columns:1fr}
   .actions{flex-direction:column}
   .bottom-inner{flex-direction:column}
+  .desktop-only{display:none}
+  .mobile-only{display:inline}
+
+  header{align-items:flex-start}
+  .t1{font-size:18px}
+  .t2{font-size:13px}
+  .card{padding:16px}
+  .card h2{font-size:18px}
+  .small{font-size:13px}
+  input,select{font-size:16px;padding:12px 13px}
+
+  .table-wrap{border:none;background:transparent;overflow:visible}
+  table,tbody,tr,td{display:block;width:100%}
+  thead{display:none}
+  tr{
+    background:white;border:1px solid var(--line);border-radius:18px;
+    margin-bottom:12px;padding:10px 10px 4px
+  }
+  td{
+    border-bottom:none;padding:8px 6px
+  }
+  td[data-label]::before{
+    content:attr(data-label);
+    display:block;
+    font-size:11px;
+    font-weight:700;
+    color:#6b7a90;
+    text-transform:uppercase;
+    letter-spacing:.4px;
+    margin-bottom:6px;
+  }
+  .actions .btn{width:100%}
 }
 </style>
 </head>
@@ -62,6 +115,7 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
     <div>
       <div class="t1">Declaración diaria por área</div>
       <div class="t2" id="userLine">Cargando…</div>
+      <div class="version-line" id="versionLine">Versión: —</div>
     </div>
   </div>
   <div class="actions">
@@ -76,7 +130,7 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
       <div class="row">
         <div>
           <h2>Existencia viva del día</h2>
-          <div class="small">Todos los usuarios de esta área trabajan sobre el mismo catálogo del día. Cada cambio guarda quién fue el último en modificar el producto.</div>
+          <div class="small">Ahora el reporte inicia con el inventario actual persistente del área, no en ceros.</div>
         </div>
         <div class="status" id="reportStatus">—</div>
       </div>
@@ -89,15 +143,16 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
         <table>
           <thead>
             <tr>
-              <th style="width:34%">Producto</th>
+              <th style="width:28%">Producto</th>
               <th style="width:14%">Cantidad</th>
-              <th style="width:14%">Tipo</th>
-              <th style="width:18%">Último valor válido</th>
-              <th style="width:20%">Acciones</th>
+              <th style="width:12%">Tipo</th>
+              <th style="width:16%">Base actual</th>
+              <th style="width:16%">Último valor válido</th>
+              <th style="width:14%">Acciones</th>
             </tr>
           </thead>
           <tbody id="rowsBody">
-            <tr><td colspan="5" class="small">Cargando…</td></tr>
+            <tr><td colspan="6" class="small">Cargando…</td></tr>
           </tbody>
         </table>
       </div>
@@ -105,7 +160,7 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
 
     <div class="card">
       <h2>Agregar producto al catálogo compartido</h2>
-      <div class="small">Si el producto ya existe en el catálogo de tu área, selecciónalo o escríbelo igual. El sistema actualizará la fila existente y no duplicará productos.</div>
+      <div class="small">Si el producto ya existe en el catálogo de tu área, escríbelo igual y el sistema lo actualizará sin duplicarlo.</div>
 
       <div style="display:grid;gap:12px;margin-top:16px">
         <div>
@@ -163,6 +218,7 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
 
 <script>
 const API = 'https://script.google.com/macros/s/AKfycbyBaaFpvm44mgPupgDFTR4ZhMpp4MRc9D_8waIzno8iI1czX-Jt1mGBQymALL9oZneTXw/exec';
+const APP_VERSION = 'v8-2026-04-09-01';
 const token = localStorage.getItem('token');
 let usuario = {};
 let currentReport = null;
@@ -172,15 +228,20 @@ let isLoading = false;
 
 (function boot(){
   try { usuario = JSON.parse(localStorage.getItem('usuario') || '{}'); } catch(_) {}
-  if (!token || !usuario.rol) return location.href = 'index.html';
-  if (String(usuario.rol).toUpperCase() === 'ADMIN') return location.href = 'admin.html';
+  if (!token || !usuario.rol) return routeTo('index');
+  if (String(usuario.rol).toUpperCase() === 'ADMIN') return routeTo('admin');
+  document.getElementById('versionLine').textContent = 'Versión: ' + APP_VERSION;
   loadToday();
 })();
+
+function routeTo(name){
+  location.href = name + '.html?v=' + encodeURIComponent(APP_VERSION);
+}
 
 function logout(){
   localStorage.removeItem('token');
   localStorage.removeItem('usuario');
-  location.href = 'index.html';
+  routeTo('index');
 }
 
 function toast(msg, err=false){
@@ -191,7 +252,11 @@ function toast(msg, err=false){
 }
 
 async function api(payload){
-  const r = await fetch(API, { method:'POST', body: JSON.stringify(payload) });
+  const r = await fetch(API + '?v=' + encodeURIComponent(APP_VERSION), {
+    method:'POST',
+    body: JSON.stringify(payload),
+    cache: 'no-store'
+  });
   return await r.json();
 }
 
@@ -252,7 +317,7 @@ function renderRows(previousSummary){
 
   const body = document.getElementById('rowsBody');
   if (!rows.length) {
-    body.innerHTML = '<tr><td colspan="5" class="small">Todavía no hay productos en el reporte de hoy.</td></tr>';
+    body.innerHTML = '<tr><td colspan="6" class="small">Todavía no hay productos en el reporte de hoy.</td></tr>';
     return;
   }
 
@@ -260,25 +325,33 @@ function renderRows(previousSummary){
     const prev = prevMap[r.productoId] || prevMap['NM:' + String(r.productoNombre || '').toLowerCase()];
     const locked = currentReport.estado !== 'BORRADOR';
     const qty = (r.cantidad == null ? 0 : r.cantidad);
+    const base = (r.cantidadBase == null ? 0 : r.cantidadBase);
 
     return `
       <tr>
-        <td>
+        <td data-label="Producto">
           <input ${locked?'disabled':''} value="${escapeHtmlAttr(r.productoNombre)}" onchange="markChanged(${idx}, 'productoNombre', this.value)">
           <div class="who">
-            Último cambio: ${escapeHtml(r.updatedByName || '—')} ${r.updatedAt ? '· ' + escapeHtml(new Date(r.updatedAt).toLocaleString('es-MX')) : ''}
+            Último cambio: ${escapeHtml(r.updatedByName || '—')}
+            ${r.updatedAt ? ' · ' + escapeHtml(new Date(r.updatedAt).toLocaleString('es-MX')) : ''}
           </div>
+          <div class="base-pill mobile-only">Base actual: ${escapeHtml(String(base))} ${escapeHtml(r.unidad || '')}</div>
         </td>
-        <td>
+        <td data-label="Cantidad">
           <input ${locked?'disabled':''} value="${qty}" inputmode="decimal" onchange="markChanged(${idx}, 'cantidad', this.value)">
         </td>
-        <td>
+        <td data-label="Tipo">
           <select ${locked?'disabled':''} onchange="markChanged(${idx}, 'unidad', this.value)">
             ${renderUnitOptions(r.unidad)}
           </select>
         </td>
-        <td class="mono">${prev ? (prev.cantidad + ' ' + prev.unidad + (prev.fecha ? ' · ' + prev.fecha : '')) : '—'}</td>
-        <td>
+        <td data-label="Base actual" class="mono">
+          ${base} ${escapeHtml(r.unidad || '')}
+        </td>
+        <td data-label="Último valor válido" class="mono">
+          ${prev ? (prev.cantidad + ' ' + prev.unidad + (prev.fecha ? ' · ' + prev.fecha : '')) : '—'}
+        </td>
+        <td data-label="Acciones">
           <div class="actions">
             <button class="btn secondary" ${locked?'disabled':''} onclick="saveRow(${idx})">Guardar</button>
             <button class="btn secondary" ${locked?'disabled':''} onclick="deleteRow('${r.id}')">Eliminar</button>
@@ -405,7 +478,9 @@ function escapeHtml(str){
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
   }[s]));
 }
-function escapeHtmlAttr(str){ return escapeHtml(str); }
+function escapeHtmlAttr(str){
+  return escapeHtml(str).replace(/"/g, '&quot;');
+}
 </script>
 </body>
 </html>
