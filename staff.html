@@ -66,14 +66,12 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
   background:#eef6ff;color:#1d4ed8;border:1px solid #cfe0ff;font-size:12px;font-weight:700
 }
 .version-line{margin-top:8px;font-size:11px;color:#7b8aa1}
-.desktop-only{display:inline}
 .mobile-only{display:none}
 
 @media(max-width:950px){
   .grid-top{grid-template-columns:1fr}
   .actions{flex-direction:column}
   .bottom-inner{flex-direction:column}
-  .desktop-only{display:none}
   .mobile-only{display:inline}
 
   header{align-items:flex-start}
@@ -130,7 +128,7 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
       <div class="row">
         <div>
           <h2>Existencia viva del día</h2>
-          <div class="small">Ahora el reporte inicia con el inventario actual persistente del área, no en ceros.</div>
+          <div class="small">Todos los usuarios activos de esta área pueden seguir editando hasta que admin cierre el reporte.</div>
         </div>
         <div class="status" id="reportStatus">—</div>
       </div>
@@ -218,7 +216,7 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
 
 <script>
 const API = 'https://script.google.com/macros/s/AKfycbyBaaFpvm44mgPupgDFTR4ZhMpp4MRc9D_8waIzno8iI1czX-Jt1mGBQymALL9oZneTXw/exec';
-const APP_VERSION = 'v8-2026-04-09-01';
+const APP_VERSION = 'v9-2026-04-11-01';
 const token = localStorage.getItem('token');
 let usuario = {};
 let currentReport = null;
@@ -294,7 +292,7 @@ async function loadToday(){
 
   document.getElementById('catalogCount').textContent = catalog.length;
 
-  const locked = !currentReport || currentReport.estado !== 'BORRADOR';
+  const locked = currentReport && currentReport.estado === 'CERRADO';
   document.getElementById('saveBtn').disabled = locked;
   document.getElementById('submitBtn').disabled = locked;
 
@@ -323,7 +321,7 @@ function renderRows(previousSummary){
 
   body.innerHTML = rows.map((r, idx) => {
     const prev = prevMap[r.productoId] || prevMap['NM:' + String(r.productoNombre || '').toLowerCase()];
-    const locked = currentReport.estado !== 'BORRADOR';
+    const locked = currentReport && currentReport.estado === 'CERRADO';
     const qty = (r.cantidad == null ? 0 : r.cantidad);
     const base = (r.cantidadBase == null ? 0 : r.cantidadBase);
 
@@ -425,7 +423,7 @@ async function saveAll(){
 
 async function addProduct(){
   if (isLoading || !currentReport || !currentReport.id) return toast('Espera a que cargue el reporte', true);
-  if (currentReport.estado !== 'BORRADOR') return;
+  if (currentReport.estado === 'CERRADO') return toast('El reporte está cerrado', true);
 
   const nombre = document.getElementById('newNombre').value.trim();
   const cantidad = document.getElementById('newCantidad').value.trim();
@@ -451,7 +449,7 @@ async function addProduct(){
 
 async function deleteRow(detalleId){
   if (isLoading || !currentReport || !currentReport.id) return toast('Espera a que cargue el reporte', true);
-  if (currentReport.estado !== 'BORRADOR') return;
+  if (currentReport.estado === 'CERRADO') return toast('El reporte está cerrado', true);
   if (!confirm('¿Eliminar esta fila del catálogo operativo del día?')) return;
 
   const data = await api({ action:'deleteDraftRow', token, detalleId });
@@ -463,13 +461,13 @@ async function deleteRow(detalleId){
 
 async function submitReport(){
   if (isLoading || !currentReport || !currentReport.id) return toast('Espera a que cargue el reporte', true);
-  if (currentReport.estado !== 'BORRADOR') return;
-  if (!confirm('¿Dar de alta el reporte? Después de enviarlo el área ya no podrá modificarlo.')) return;
+  if (currentReport.estado === 'CERRADO') return toast('El reporte está cerrado', true);
+  if (!confirm('¿Guardar y dar de alta el reporte? El staff podrá seguir editando hasta que admin lo cierre.')) return;
 
   const data = await api({ action:'submitTodayReport', token });
   if (!data.ok) return toast(data.error || 'No se pudo enviar', true);
 
-  toast('Reporte enviado');
+  toast('Reporte guardado');
   await loadToday();
 }
 
