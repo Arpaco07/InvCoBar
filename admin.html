@@ -43,12 +43,18 @@ textarea{min-height:92px;resize:vertical}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:40;padding:16px}
 .modal-bg.open{display:flex}
-.modal{width:min(760px,96vw);background:white;border-radius:20px;border:1px solid var(--line);padding:20px;max-height:90vh;overflow:auto}
+.modal{width:min(900px,96vw);background:white;border-radius:20px;border:1px solid var(--line);padding:20px;max-height:90vh;overflow:auto}
 .toast{position:fixed;top:84px;left:50%;transform:translateX(-50%);padding:12px 16px;border-radius:14px;display:none;z-index:50}
 .toast.show{display:block}
 .toast.ok{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0}
 .toast.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
 .version-line{margin-top:6px;font-size:11px;color:#7b8aa1}
+.history-box{
+  margin-top:8px;padding:8px 10px;border:1px solid #e5edf9;border-radius:12px;background:#fafcff
+}
+.history-item{font-size:12px;color:#516277;line-height:1.4;margin-bottom:4px}
+.history-item:last-child{margin-bottom:0}
+.qty-input{min-width:110px;font-size:16px}
 @media(max-width:1000px){.grid-two{grid-template-columns:1fr}}
 </style>
 </head>
@@ -250,7 +256,7 @@ textarea{min-height:92px;resize:vertical}
 
 <script>
 const API = 'https://script.google.com/macros/s/AKfycbyBaaFpvm44mgPupgDFTR4ZhMpp4MRc9D_8waIzno8iI1czX-Jt1mGBQymALL9oZneTXw/exec';
-const APP_VERSION = 'v8-2026-04-09-01';
+const APP_VERSION = 'v9-2026-04-11-01';
 const token = localStorage.getItem('token');
 let usuario = {};
 let dashboard = null;
@@ -340,26 +346,60 @@ async function openReport(reporteId){
   document.getElementById('adminNewNombre').value = '';
   document.getElementById('adminNewCantidad').value = '';
   document.getElementById('adminNewUnidad').value = 'pza';
+
   document.getElementById('modalRows').innerHTML = data.rows.map(r => `
     <tr>
-      <td>${escapeHtml(r.nombre)}<br><span class="small">Último cambio: ${escapeHtml(r.lastUpdatedBy || '—')}</span></td>
-      <td><input value="${r.cantidad}" inputmode="decimal" onchange="adminUpdateRow('${r.detalleId}', this.value)"></td>
+      <td>
+        ${escapeHtml(r.nombre)}
+        <div class="small">Último cambio: ${escapeHtml(r.lastUpdatedBy || '—')}</div>
+        <div class="history-box">
+          ${(r.historial && r.historial.length)
+            ? r.historial.map(h => `
+              <div class="history-item">
+                ${escapeHtml(h.fecha)} — ${escapeHtml(h.usuario || '—')} → ${escapeHtml(h.accion || '—')}${h.resumen ? ' · ' + escapeHtml(h.resumen) : ''}
+              </div>
+            `).join('')
+            : '<div class="history-item">Sin movimientos recientes.</div>'
+          }
+        </div>
+      </td>
+      <td>
+        <input id="qty_${r.detalleId}" class="qty-input" value="${r.cantidad}" inputmode="decimal">
+      </td>
       <td>${r.inventarioActual === null ? '—' : (r.inventarioActual + ' ' + escapeHtml(r.unidad))}</td>
       <td>${r.referenciaCantidad === null ? '—' : (r.referenciaCantidad + ' ' + escapeHtml(r.unidad) + (r.referenciaFecha ? '<br><span class="small">' + escapeHtml(r.referenciaFecha) + '</span>' : ''))}</td>
       <td>${r.diferenciaVsReferencia === null ? '—' : signed(r.diferenciaVsReferencia)}</td>
-      <td><button class="btn secondary" onclick="adminDeleteRow('${r.detalleId}')">Eliminar</button></td>
+      <td>
+        <div class="actions">
+          <button class="btn primary" onclick="saveAdminRow('${r.detalleId}')">Guardar</button>
+          <button class="btn secondary" onclick="adminDeleteRow('${r.detalleId}')">Eliminar</button>
+        </div>
+      </td>
     </tr>`).join('');
   document.getElementById('reportModal').classList.add('open');
 }
 function closeModal(){ document.getElementById('reportModal').classList.remove('open'); }
 
-async function adminUpdateRow(detalleId, cantidad){
-  const data = await api({ action:'adminUpdateRow', token, detalleId, cantidad });
-  if (!data.ok) return toast(data.error || 'No se pudo actualizar', true);
-  toast('Fila corregida');
+async function saveAdminRow(detalleId){
+  const input = document.getElementById('qty_' + detalleId);
+  if (!input) return toast('No se encontró el campo', true);
+
+  const cantidad = input.value;
+
+  const data = await api({
+    action:'adminUpdateRow',
+    token,
+    detalleId,
+    cantidad
+  });
+
+  if (!data.ok) return toast(data.error || 'Error al guardar', true);
+
+  toast('Actualizado correctamente');
   await openReport(currentReport.id);
   await loadDashboard();
 }
+
 async function adminDeleteRow(detalleId){
   if (!confirm('¿Eliminar esta fila del reporte?')) return;
   const data = await api({ action:'adminDeleteRow', token, detalleId });
