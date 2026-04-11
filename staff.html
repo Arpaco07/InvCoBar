@@ -31,8 +31,8 @@ header{
 .btn.primary{background:var(--primary);color:white}
 .btn.secondary{background:white;border:1px solid var(--line);color:var(--text)}
 .btn.warn{background:#fff7ed;color:#9a3412;border:1px solid #fdba74}
-.wrap{max-width:1280px;margin:0 auto;padding:18px 16px 120px}
-.grid-top{display:grid;grid-template-columns:1.25fr .95fr;gap:16px}
+.wrap{max-width:1380px;margin:0 auto;padding:18px 16px 120px}
+.grid-top{display:grid;grid-template-columns:1.3fr .9fr;gap:16px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:18px}
 .card h2{margin:0 0 8px;font-size:20px}
 .small{font-size:12px;color:var(--muted);line-height:1.5}
@@ -42,12 +42,16 @@ header{
 .status.revisado,.status.cerrado{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0}
 .row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .table-wrap{margin-top:16px;background:white;border:1px solid var(--line);border-radius:18px;overflow:hidden}
-table{width:100%;border-collapse:collapse}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
 th,td{padding:12px 10px;border-bottom:1px solid #edf2fa;text-align:left;font-size:14px;vertical-align:top}
 th{background:#f8fbff;font-size:12px;color:#5f6f85;text-transform:uppercase;letter-spacing:.5px}
 input,select{
-  width:100%;padding:11px 12px;border:1px solid var(--line);
-  border-radius:12px;font-size:15px;background:white
+  width:100%;
+  padding:12px 12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  font-size:16px;
+  background:white
 }
 input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px rgba(31,111,255,.12)}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
@@ -55,7 +59,7 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
 .summary-list{display:grid;gap:10px}
 .summary-item{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#fbfdff}
 .fixed-bottom{position:fixed;left:0;right:0;bottom:0;padding:14px 16px;background:linear-gradient(180deg,transparent,#f5f8fc 28%)}
-.bottom-inner{max-width:1280px;margin:0 auto;display:flex;gap:10px;justify-content:flex-end}
+.bottom-inner{max-width:1380px;margin:0 auto;display:flex;gap:10px;justify-content:flex-end}
 .toast{position:fixed;top:84px;left:50%;transform:translateX(-50%);padding:12px 16px;border-radius:14px;display:none;z-index:50}
 .toast.show{display:block}
 .toast.ok{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0}
@@ -68,10 +72,36 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
 .version-line{margin-top:8px;font-size:11px;color:#7b8aa1}
 .mobile-only{display:none}
 
-@media(max-width:950px){
+.col-producto{width:32%}
+.col-cantidad{width:18%}
+.col-tipo{width:14%}
+.col-base{width:14%}
+.col-ultimo{width:12%}
+.col-acciones{width:10%}
+
+.cell-cantidad input{
+  min-width:120px;
+  text-align:center;
+  font-weight:700;
+}
+.cell-tipo select{
+  min-width:120px;
+  font-weight:700;
+}
+.cell-producto input{
+  min-height:48px;
+}
+.cell-acciones .btn{
+  min-width:92px;
+}
+
+@media(max-width:1100px){
   .grid-top{grid-template-columns:1fr}
   .actions{flex-direction:column}
   .bottom-inner{flex-direction:column}
+}
+
+@media(max-width:950px){
   .mobile-only{display:inline}
 
   header{align-items:flex-start}
@@ -80,17 +110,34 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
   .card{padding:16px}
   .card h2{font-size:18px}
   .small{font-size:13px}
-  input,select{font-size:16px;padding:12px 13px}
+  input,select{
+    font-size:17px;
+    padding:14px 14px;
+    min-height:52px;
+  }
 
-  .table-wrap{border:none;background:transparent;overflow:visible}
-  table,tbody,tr,td{display:block;width:100%}
-  thead{display:none}
+  .table-wrap{
+    border:none;
+    background:transparent;
+    overflow:visible;
+  }
+  table,tbody,tr,td{
+    display:block;
+    width:100%;
+  }
+  thead{
+    display:none;
+  }
   tr{
-    background:white;border:1px solid var(--line);border-radius:18px;
-    margin-bottom:12px;padding:10px 10px 4px
+    background:white;
+    border:1px solid var(--line);
+    border-radius:18px;
+    margin-bottom:14px;
+    padding:12px 12px 8px;
   }
   td{
-    border-bottom:none;padding:8px 6px
+    border-bottom:none;
+    padding:8px 4px;
   }
   td[data-label]::before{
     content:attr(data-label);
@@ -102,7 +149,35 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
     letter-spacing:.4px;
     margin-bottom:6px;
   }
-  .actions .btn{width:100%}
+
+  .cell-producto,
+  .cell-cantidad,
+  .cell-tipo,
+  .cell-base,
+  .cell-ultimo,
+  .cell-acciones{
+    width:100%;
+  }
+
+  .cell-cantidad input,
+  .cell-tipo select{
+    min-width:100%;
+    width:100%;
+  }
+
+  .cell-acciones .actions{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+  .cell-acciones .btn{
+    width:100%;
+    min-width:100%;
+  }
+
+  .who{
+    font-size:12px;
+  }
 }
 </style>
 </head>
@@ -141,12 +216,12 @@ input:focus,select:focus{outline:none;border-color:#8cb4ff;box-shadow:0 0 0 3px 
         <table>
           <thead>
             <tr>
-              <th style="width:28%">Producto</th>
-              <th style="width:14%">Cantidad</th>
-              <th style="width:12%">Tipo</th>
-              <th style="width:16%">Base actual</th>
-              <th style="width:16%">Último valor válido</th>
-              <th style="width:14%">Acciones</th>
+              <th class="col-producto">Producto</th>
+              <th class="col-cantidad">Cantidad</th>
+              <th class="col-tipo">Tipo</th>
+              <th class="col-base">Base actual</th>
+              <th class="col-ultimo">Último valor válido</th>
+              <th class="col-acciones">Acciones</th>
             </tr>
           </thead>
           <tbody id="rowsBody">
@@ -327,7 +402,7 @@ function renderRows(previousSummary){
 
     return `
       <tr>
-        <td data-label="Producto">
+        <td data-label="Producto" class="cell-producto">
           <input ${locked?'disabled':''} value="${escapeHtmlAttr(r.productoNombre)}" onchange="markChanged(${idx}, 'productoNombre', this.value)">
           <div class="who">
             Último cambio: ${escapeHtml(r.updatedByName || '—')}
@@ -335,21 +410,21 @@ function renderRows(previousSummary){
           </div>
           <div class="base-pill mobile-only">Base actual: ${escapeHtml(String(base))} ${escapeHtml(r.unidad || '')}</div>
         </td>
-        <td data-label="Cantidad">
+        <td data-label="Cantidad" class="cell-cantidad">
           <input ${locked?'disabled':''} value="${qty}" inputmode="decimal" onchange="markChanged(${idx}, 'cantidad', this.value)">
         </td>
-        <td data-label="Tipo">
+        <td data-label="Tipo" class="cell-tipo">
           <select ${locked?'disabled':''} onchange="markChanged(${idx}, 'unidad', this.value)">
             ${renderUnitOptions(r.unidad)}
           </select>
         </td>
-        <td data-label="Base actual" class="mono">
+        <td data-label="Base actual" class="mono cell-base">
           ${base} ${escapeHtml(r.unidad || '')}
         </td>
-        <td data-label="Último valor válido" class="mono">
+        <td data-label="Último valor válido" class="mono cell-ultimo">
           ${prev ? (prev.cantidad + ' ' + prev.unidad + (prev.fecha ? ' · ' + prev.fecha : '')) : '—'}
         </td>
-        <td data-label="Acciones">
+        <td data-label="Acciones" class="cell-acciones">
           <div class="actions">
             <button class="btn secondary" ${locked?'disabled':''} onclick="saveRow(${idx})">Guardar</button>
             <button class="btn secondary" ${locked?'disabled':''} onclick="deleteRow('${r.id}')">Eliminar</button>
